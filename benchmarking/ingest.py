@@ -10,7 +10,7 @@ to regen the cache
 """
 
 import os
-from dataclasses import dataclass, asdict
+from dataclasses import asdict
 from pathlib import Path
 from typing import *
 from typing import List

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import List, Callable
+from jinja2 import Template
 
 @dataclass 
 class IngestionHeuristics:
@@ -24,8 +25,19 @@ class EmbeddedFile:
     def __repr__(self) -> str:
         return f"File: {self.path}, Length: {len(self.contents)}"
 
-
 @dataclass
 class FilePair:
     cosine_similarity: float
     files: List[EmbeddedFile]
+
+@dataclass
+class ProblemGeneratorParameters:
+    filepair_selection_logic: Callable[[List[FilePair]], FilePair]
+    prompt_template: Template
+    problem_gen_model: str = "gpt-4o"
+
+@dataclass
+class GeneratedProblemStatement:
+    prompt: str
+    model: str
+    problem_statement: str
