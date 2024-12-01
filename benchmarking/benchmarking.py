@@ -3,6 +3,7 @@ from typing import List
 from jinja2 import Template
 import yaml
 
+from miner_utils import generate_code_patch, UnsolvedIssue
 from classes import IngestionHeuristics, GeneratedProblemStatement, ProblemGeneratorParameters, FilePair
 
 from ingest import get_all_filepairs
@@ -34,10 +35,10 @@ SAMPLE_TEMPLATE = Template(
 def parse_yaml():
     current_dir = Path(__file__).parent
     config_path = current_dir.parent / "config" / "default.yaml"
-    
+
     with open(config_path, 'r') as f:
         config = yaml.safe_load(f)
-    
+
     return config
 
 def benchmark():
@@ -53,8 +54,8 @@ def benchmark():
         prompt_template=SAMPLE_TEMPLATE,
     )
 
-    current_dir = Path(__file__).parent
-    sample_repo = current_dir.parent / "sample-repo"
+    current_dir = Path.cwd()
+    sample_repo = (current_dir.parent / "seaborn").resolve()
     print(config)
     repos = config.keys()
 
@@ -65,7 +66,7 @@ def benchmark():
             repo_path=sample_repo,
             ingestion_heuristics=ingestion_heuristics,
             problem_generation_params=ProblemGeneratorParameters(
-                **problem_generator_params, 
+                **problem_generator_params,
                 num_problems_to_gen=config[repo]["problems"],
                 problem_gen_model=config[repo]["agent_llm"]
             )
@@ -75,7 +76,7 @@ def benchmark():
 
 def benchmark_single_respository(
     repo_path: Path,
-    ingestion_heuristics: IngestionHeuristics, 
+    ingestion_heuristics: IngestionHeuristics,
     problem_generation_params: ProblemGeneratorParameters
 ):
     file_pairs = get_all_filepairs(
@@ -83,12 +84,21 @@ def benchmark_single_respository(
         heuristics=ingestion_heuristics,
         refresh=False
     )
-    
+
     # Generate one problem statement, with prompt and model to benchmark
     problem_statements: List[GeneratedProblemStatement] = generate_problem_statement(
         filepairs=file_pairs,
         parameters=problem_generation_params
     )
+
+    print(f"Generated problem statements: {problem_statements}")
+
+    # Convert problem statement to patch:
+    # for problem_statement in problem_statements:
+    #     generate_code_patch("claude-sonnet-3.5", UnsolvedIssue(
+    #         desc=problem_statement.problem_statement,
+    #         local_code_path=repo_path,
+    #     ))
 
     return problem_statements
 
