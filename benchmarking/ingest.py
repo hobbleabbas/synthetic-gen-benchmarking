@@ -21,32 +21,12 @@ import json
 import pickle
 
 from clients import logger, OPENAI_CLIENT
+from classes import EmbeddedFile, FilePair, IngestionHeuristics
 
-@dataclass
-class File:
-    path: Path
-    contents: str
-
-
-@dataclass
-class EmbeddedFile:
-    path: str
-    contents: str
-    embedding: list
-
-    def __str__(self):
-        return f"File: {self.path}, Length: {len(self.contents)}"
-    
-    def __repr__(self) -> str:
-        return f"File: {self.path}, Length: {len(self.contents)}"
-
-
-@dataclass
-class FilePair:
-    cosine_similarity: float
-    files: List[EmbeddedFile]
-
-
+SAMPLE_INGESTION_HEURISTICS = IngestionHeuristics(
+    min_files_to_consider_dir_for_problems=5,
+    min_file_content_len=50
+)
 
 def walk_repository(repo_path: Path) -> Dict:
     """
@@ -76,7 +56,7 @@ def walk_repository(repo_path: Path) -> Dict:
 def cosine_similarity(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
-def evaluate_for_context(dir_path, repo_structure):
+def evaluate_for_context(dir_path, repo_structure, heuristics: IngestionHeuristics):
 
     def _retrieve_files_in_dir():
         # Get all files in the current directory
@@ -132,7 +112,7 @@ def evaluate_for_context(dir_path, repo_structure):
             files=most_similar_pair
         )
 
-    if len(repo_structure['files']) >= 5:
+    if len(repo_structure['files']) >= heuristics.min_files_to_consider_dir_for_problems:
         # print(dir_path)
         files = _retrieve_files_in_dir()
         embeddings = _embed_code(list(map(lambda file: file['contents'], files)))
@@ -143,7 +123,7 @@ def evaluate_for_context(dir_path, repo_structure):
                 embedding=embeddings[i]
             )
             for i, file in enumerate(files)
-            if len(file['contents']) > 50
+            if len(file['contents']) > heuristics.min_file_content_len
         ]
 
         most_similar_files = _find_most_similar_files(embedded_files)
@@ -187,7 +167,11 @@ def load_filepairs_from_cache(cache_path: str) -> List[FilePair]:
     except (FileNotFoundError, EOFError):
         return []
     
-def get_all_filepairs(local_repo: Path, refresh: bool = False) -> List[FilePair]:
+def get_all_filepairs(
+    local_repo: Path, 
+    heuristics: IngestionHeuristics = SAMPLE_INGESTION_HEURISTICS,
+    refresh: bool = False,
+) -> List[FilePair]:
     cache_path = f".cache/{local_repo}"
 
     filepairs_from_cache = load_filepairs_from_cache(cache_path=cache_path)
@@ -201,7 +185,7 @@ def get_all_filepairs(local_repo: Path, refresh: bool = False) -> List[FilePair]
     for dir_path, contents in repo_structure.items():
         full_path = os.path.join(local_repo, dir_path) if dir_path else local_repo
         if contents['files']:
-            file_pairs.append(evaluate_for_context(full_path, contents))
+            file_pairs.append(evaluate_for_context(full_path, contents, heuristics=heuristics))
 
     valid_pairs = [pair for pair in file_pairs if pair and isinstance(pair, FilePair)]
     if not valid_pairs:
@@ -218,7 +202,10 @@ def get_all_filepairs(local_repo: Path, refresh: bool = False) -> List[FilePair]
 if __name__ == "__main__":
     current_dir = Path(__file__).parent
     sample_repo = current_dir.parent / "sample-repo"
-    file_pairs = get_all_filepairs(sample_repo)
+    file_pairs = get_all_filepairs(
+        sample_repo,
+        refresh=True
+    )
     
     for pair in file_pairs:
         print(pair, type(pair))
