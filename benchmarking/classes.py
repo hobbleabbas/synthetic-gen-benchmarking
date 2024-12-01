@@ -34,7 +34,8 @@ class FilePair:
 class ProblemGeneratorParameters:
     filepair_selection_logic: Callable[[List[FilePair]], FilePair]
     prompt_template: Template
-    problem_gen_model: str = "gpt-4o"
+    num_problems_to_gen: int
+    problem_gen_model: str = "gpt-4o-2024-08-06"
 
 @dataclass
 class GeneratedProblemStatement:
