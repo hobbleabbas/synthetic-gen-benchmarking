@@ -1,0 +1,6 @@
+[submodule "SWE-agent"]
+	path = SWE-agent
+	url = https://github.com/Shayansalesi/SWE-agent/
+[submodule "sample-repo"]
+	path = sample-repo
+	url = https://github.com/mwaskom/seaborn
