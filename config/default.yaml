@@ -2,5 +2,5 @@ mwaskom/seaborn:
   problems: 10
   agent_llm: ["gpt-4o"]
 pytest-dev/pytest:
-  problem: 5
+  problems: 5
   agent_llm: ["claude-sonnet-3.5"]
