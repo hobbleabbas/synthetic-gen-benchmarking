@@ -48,6 +48,7 @@ if __name__ == "__main__":
     )
     file_pairs = get_all_filepairs(
         sample_repo,
+        heuristics=ingestion_heuristics
         refresh=False
     )
     
