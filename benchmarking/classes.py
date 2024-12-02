@@ -53,3 +53,8 @@ class MinerOutputScore(BaseModel):
     logical_solution: float
     brevity_and_cleanliness_of_code: float
     potential_bugs_generated: float
+
+class FullyScoredProblem:
+    generated_problem_statement: GeneratedProblemStatement
+    miner_solution_patch: str
+    miner_output_score: MinerOutputScore
