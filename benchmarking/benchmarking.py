@@ -33,7 +33,7 @@ SAMPLE_TEMPLATE = Template(
 )
 
 def parse_yaml():
-    current_dir = Path(__file__).parent
+    current_dir = Path.cwd()
     config_path = current_dir.parent / "config" / "default.yaml"
 
     with open(config_path, 'r') as f:
