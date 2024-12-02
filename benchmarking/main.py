@@ -116,13 +116,6 @@ def create_problem_statements(config, repo, repo_path, problems, ingestion_heuri
             problem_generation_params=problem_generator_params
         )
 
-        if "repeat" in config[repo] and config[repo]["repeat"] is not None:
-            num_repeats = int(config[repo]["repeat"])
-            temp_problem_statements = list(itertools.chain.from_iterable(
-                [problem_statements[:] for _ in range(num_repeats)]
-            ))
-            problem_statements = temp_problem_statements
-
     elif isinstance(problems, list) and all(isinstance(text, str) for text in problems):
         problem_statements: List[GeneratedProblemStatement] = [
             GeneratedProblemStatement(
@@ -136,6 +129,14 @@ def create_problem_statements(config, repo, repo_path, problems, ingestion_heuri
                 )
             ) for text in problems
         ]
+
+        if "repeat" in config[repo] and config[repo]["repeat"] is not None:
+            num_repeats = int(config[repo]["repeat"])
+            temp_problem_statements = list(itertools.chain.from_iterable(
+                [problem_statements[:] for _ in range(num_repeats)]
+            ))
+            problem_statements = temp_problem_statements
+
     else:
         raise ValueError(
             f"config[{repo}]['problems'] must be a list of strings or an integer. "
