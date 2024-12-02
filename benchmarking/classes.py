@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Callable
+from typing import List, Callable, Optional
 from jinja2 import Template
 from pydantic import BaseModel
 
@@ -36,22 +36,44 @@ class ProblemGeneratorParameters:
     filepair_selection_logic: Callable[[List[FilePair]], FilePair]
     prompt_template: Template
     num_problems_to_gen: int
-    problem_gen_model: str = "gpt-4o-2024-08-06"
+    problem_gen_model: str
+
+@dataclass
+class ValidatorModelStats:
+    input_tokens: int
+    output_tokens: int
+    cost: float
 
 @dataclass
 class GeneratedProblemStatement:
     prompt: str
     model: str
     problem_statement: str
+    model_stats: Optional[ValidatorModelStats] = None
+
+@dataclass
+class GeneratedProblemStatementList:
+    problem_statements: List[GeneratedProblemStatement]
+    prompt_tokens: int
+    completion_tokens: int
+
 
 @dataclass
 class UnsolvedIssue:
     desc: str
     local_code_path: Path
 
+class MinerModelStats(BaseModel):
+    api_calls: int
+    instance_cost: float
+    tokens_received: int
+    tokens_sent: int
+    total_cost: float
+
 @dataclass
 class IssueSolution:
     patch: str
+    model_stats: Optional[MinerModelStats] = None
 
 # We use pydantic for some classes because OpenAI json output can structure based on that
 class ListOfGeneratedProblems(BaseModel):
@@ -66,5 +88,6 @@ class MinerOutputScore(BaseModel):
 @dataclass
 class FullyScoredProblem:
     generated_problem_statement: GeneratedProblemStatement
-    miner_solution_patch: str
+    miner_solution: IssueSolution
+    miner_llm: str
     miner_output_score: MinerOutputScore

@@ -1,16 +1,19 @@
+import itertools
+import statistics
+import textwrap
 from pathlib import Path
-from typing import List
-from jinja2 import Template
+from typing import List, Dict
+
 import yaml
-
-from miner_utils import generate_code_patch, UnsolvedIssue
-from classes import IngestionHeuristics, GeneratedProblemStatement, ProblemGeneratorParameters, FilePair, FullyScoredProblem
-import pandas as pd
-
-from ingest import get_all_filepairs
-from generate_problem import generate_problem_statement
+from jinja2 import Template
 from tabulate import tabulate
+
+from classes import IngestionHeuristics, GeneratedProblemStatement, ProblemGeneratorParameters, FilePair, \
+    FullyScoredProblem, ValidatorModelStats
+from generate_problem import generate_problem_statements
 from grade_output import grade_miner_solution
+from ingest import get_all_filepairs
+from miner_utils import generate_code_patch, UnsolvedIssue
 
 PROBLEM_STATEMENT_TEMPLATE = Template(
     """
@@ -62,7 +65,7 @@ def highest_cosine_filepair_selector(file_pairs: List[FilePair]) -> FilePair:
     return selected_file_pair
 
 def parse_yaml():
-    current_dir = Path(__file__).parent
+    current_dir = Path.cwd()
     config_path = current_dir.parent / "config" / "default.yaml"
 
     with open(config_path, 'r') as f:
@@ -72,24 +75,73 @@ def parse_yaml():
 
 
 def flatten_and_display_solutions(solutions):
+    # Helper to wrap text for better display
+    def wrap_text(text, width=50):
+        return "\n".join(textwrap.wrap(text, width=width))
+
     # Flatten the solutions dictionary
     flat_data = []
     for repo, problems in solutions.items():
         for problem in problems:
+            overall_score = str(statistics.mean(vars(problem.miner_output_score).values()))
             flat_data.append([
-                repo,
-                problem.generated_problem_statement.problem_statement[:250],
-                problem.generated_problem_statement.model,
-                problem.miner_solution_patch[:250],
-                problem.miner_output_score
+                wrap_text(repo, width=30),
+                wrap_text(problem.generated_problem_statement.problem_statement[:100] + "...", width=50),
+                problem.miner_llm,
+                wrap_text(problem.miner_solution.patch[:100] + "...", width=50),
+                wrap_text(overall_score, width=50),
+                problem.miner_solution.model_stats.total_cost,
+                problem.generated_problem_statement.model_stats.cost,
             ])
 
     # Define headers
-    headers = ["Repository", "Problem Statement", "Model", "Solution Patch", "Output Score"]
+    headers = ["Repository", "Problem Statement", "Model", "Solution Patch", "Output Score", "Miner $", "Validator $"]
 
     # Print the table
     print(tabulate(flat_data, headers=headers, tablefmt="fancy_grid", stralign="left"))
+    import ipdb; ipdb.set_trace()
 
+def create_problem_statements(config, repo, repo_path, problems, ingestion_heuristics) -> List[GeneratedProblemStatement]:
+    if isinstance(problems, int):
+        problem_generator_params = ProblemGeneratorParameters(
+            filepair_selection_logic=highest_cosine_filepair_selector,
+            prompt_template=PROBLEM_STATEMENT_TEMPLATE,
+            num_problems_to_gen=config[repo]["problems"],
+            problem_gen_model=config[repo]["validator_llm"]
+        )
+
+        problem_statements: List[GeneratedProblemStatement] = generate_problems_for_single_repo(
+            repo_path=repo_path,
+            ingestion_heuristics=ingestion_heuristics,
+            problem_generation_params=problem_generator_params
+        )
+
+        if "repeat" in config[repo] and config[repo]["repeat"] is not None:
+            num_repeats = int(config[repo]["repeat"])
+            temp_problem_statements = list(itertools.chain.from_iterable(
+                [problem_statements[:] for _ in range(num_repeats)]
+            ))
+            problem_statements = temp_problem_statements
+
+    elif isinstance(problems, list) and all(isinstance(text, str) for text in problems):
+        problem_statements: List[GeneratedProblemStatement] = [
+            GeneratedProblemStatement(
+                prompt="N/A",
+                model="N/A",
+                problem_statement=text,
+                model_stats=ValidatorModelStats(
+                    input_tokens=0,
+                    output_tokens=0,
+                    cost=0.0,
+                )
+            ) for text in problems
+        ]
+    else:
+        raise ValueError(
+            f"config[{repo}]['problems'] must be a list of strings or an integer. "
+            f"Current value of `{config[repo]['problems']}` is invalid"
+        )
+    return problem_statements
 
 def main():
     config = parse_yaml()
@@ -99,66 +151,27 @@ def main():
         min_file_content_len=50,
     )
 
-    current_dir = Path(__file__).parent
+    current_dir = Path.cwd()
+    # todo: make this dynamic from config file
     sample_repo = current_dir.parent / "seaborn"
     repos = config.keys()
 
-    solutions = {}
+    solutions: Dict[str, List[FullyScoredProblem]] = {}
 
     for repo in repos:
-        problem_generator_params = ProblemGeneratorParameters(
-            filepair_selection_logic=highest_cosine_filepair_selector,
-            prompt_template=PROBLEM_STATEMENT_TEMPLATE,
-            num_problems_to_gen=config[repo]["problems"],
-            problem_gen_model=config[repo]["agent_llm"]
+        problems = config[repo]["problems"]
+        problem_statements: List[GeneratedProblemStatement] = create_problem_statements(
+            config, repo, sample_repo, problems, ingestion_heuristics
         )
 
-        if config[repo].get("fixed_problem") and len(config[repo]["fixed_problem"]) > 0:
-            print(f"Found fixed problem statement for {repo} repo. Generating solution with {config[repo]["agent_llm"][0]} model...")
+        solutionset_for_repo: List[FullyScoredProblem] = []
+        for problem, llm in itertools.product(problem_statements, config[repo]["agent_llm"]):
+            print(f"Generating code patch with LLM {llm} and problem '{problem.problem_statement[:20]}'...")
 
-            solution = generate_code_patch(
-                model_name=config[repo]["agent_llm"][0],
-                unsolved_issue=UnsolvedIssue(
-                    desc=config[repo]["fixed_problem"],
-                    local_code_path=sample_repo
-                )
-            )
-
-            problem_statement = GeneratedProblemStatement(
-                prompt="No prompt provided. Fixed problem statement",
-                problem_statement=config[repo]["fixed_problem"],
-                model=config[repo]["agent_llm"][0]
-            )
-
-            score_for_solution = grade_miner_solution(
-                grader_system_prompt=GRADER_SYSTEM_PROMPT,
-                generated_problem_statement=problem_statement,
-                miner_solution=solution.patch,
-            )
-
-            fully_scored_problem = FullyScoredProblem(
-                generated_problem_statement=problem_statement,
-                miner_solution_patch=solution.patch,
-                miner_output_score=score_for_solution
-            )
-
-            print("Generated solution for fixed problem.")
-            print(fully_scored_problem)
-
-
-        else:
-            generated_problem_statements = generate_problems_for_single_repo(
-                repo_path=sample_repo,
-                ingestion_heuristics=ingestion_heuristics,
-                problem_generation_params=problem_generator_params
-            )
-
-            solutionset_for_repo = []
-
-            for problem in generated_problem_statements:
-                # Run miner to generate a solution, then score the solution and create a FullyScoredProblem object, with the problem statement, solution diff, and generated grade
+            # Run miner to generate a solution, then score the solution and create a FullyScoredProblem object, with the problem statement, solution diff, and generated grade
+            try:
                 solution = generate_code_patch(
-                    model_name=config[repo]["agent_llm"][0],
+                    model_name=llm,
                     unsolved_issue=UnsolvedIssue(
                         desc=problem.problem_statement,
                         local_code_path=sample_repo
@@ -168,27 +181,30 @@ def main():
                 score_for_solution = grade_miner_solution(
                     grader_system_prompt=GRADER_SYSTEM_PROMPT,
                     generated_problem_statement=problem,
-                    miner_solution=solution.patch,
+                    miner_solution=solution,
                 )
 
                 solutionset_for_repo.append(FullyScoredProblem(
                     generated_problem_statement=problem,
-                    miner_solution_patch=solution.patch,
+                    miner_solution=solution,
+                    miner_llm=llm,
                     miner_output_score=score_for_solution
                 ))
+            except Exception as e:
+                print(f"Encountered error, skipping SWE-agent run. Error: {repr(e)} Problem: {problem}, llm: {llm}")
 
 
-            solutions[repo] = solutionset_for_repo
+        solutions[repo] = solutionset_for_repo
 
-            print("Obtained solutions. Displaying them in a table...")
-            flatten_and_display_solutions(solutions)
-            print("Finished displaying solutions in table")
+        print("Obtained solutions. Displaying them in a table...")
+        flatten_and_display_solutions(solutions)
+        print("Finished displaying solutions in table")
 
 def generate_problems_for_single_repo(
     repo_path: Path,
     ingestion_heuristics: IngestionHeuristics,
     problem_generation_params: ProblemGeneratorParameters
-):
+) -> List[GeneratedProblemStatement]:
     file_pairs = get_all_filepairs(
         repo_path,
         heuristics=ingestion_heuristics,
@@ -196,12 +212,11 @@ def generate_problems_for_single_repo(
     )
 
     # Generate one problem statement, with prompt and model to benchmark
-    problem_statements: List[GeneratedProblemStatement] = generate_problem_statement(
+    problem_statements_list = generate_problem_statements(
         filepairs=file_pairs,
         parameters=problem_generation_params
     )
-
-    return problem_statements
+    return problem_statements_list
 
 
 if __name__ == "__main__":

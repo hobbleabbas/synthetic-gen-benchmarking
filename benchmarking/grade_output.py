@@ -1,15 +1,16 @@
-from classes import GeneratedProblemStatement, MinerOutputScore
+from classes import GeneratedProblemStatement, MinerOutputScore, IssueSolution
 from clients import OPENAI_CLIENT
+
 
 def grade_miner_solution(
     grader_system_prompt: str,
     generated_problem_statement: GeneratedProblemStatement,
-    miner_solution: str
+    miner_solution: IssueSolution
 ):
 
     CONTEXT_FOR_SOLUTION = f"""
     Problem Statement: {generated_problem_statement.problem_statement}
-    patch: {miner_solution}
+    patch: {miner_solution.patch}
     Affected Files:
     {generated_problem_statement.prompt}    
     """

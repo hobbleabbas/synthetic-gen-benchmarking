@@ -1,9 +1,12 @@
 from typing import List
 
-from classes import FilePair, ProblemGeneratorParameters, GeneratedProblemStatement, ListOfGeneratedProblems
+from model_pricing import calculate_price
+from classes import FilePair, ProblemGeneratorParameters, GeneratedProblemStatement, ListOfGeneratedProblems, \
+    ValidatorModelStats
 from clients import OPENAI_CLIENT
 
-def generate_problem_statement(
+
+def generate_problem_statements(
     filepairs: List[FilePair],
     parameters: ProblemGeneratorParameters
 ) -> List[GeneratedProblemStatement]:
@@ -15,7 +18,7 @@ def generate_problem_statement(
     )
 
     completion = OPENAI_CLIENT.beta.chat.completions.parse(
-        model='gpt-4o-2024-08-06',
+        model=parameters.problem_gen_model,
         messages=[
             {"role": "system", "content": prompt_text},
             {"role": "user", "content": f"Generate the list of problem statements. Generate exactly {parameters.num_problems_to_gen} statements, no more and no less"},
@@ -24,11 +27,18 @@ def generate_problem_statement(
     )
 
     parsed_response = completion.choices[0].message.parsed.generated_problem_statements
+    prompt_tokens, completion_tokens = completion.usage.prompt_tokens, completion.usage.completion_tokens
+    cost = calculate_price(parameters.problem_gen_model, prompt_tokens, completion_tokens)
 
     return [
         GeneratedProblemStatement(
             prompt=prompt_text,
             model=parameters.problem_gen_model,
-            problem_statement=statement
+            problem_statement=statement,
+            model_stats=ValidatorModelStats(
+                input_tokens=prompt_tokens,
+                output_tokens=completion_tokens,
+                cost=cost,
+            )
         ) for statement in parsed_response
     ]

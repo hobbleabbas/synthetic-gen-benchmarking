@@ -4,7 +4,7 @@ import logging
 from dataclasses import dataclass
 from pathlib import Path
 
-from classes import UnsolvedIssue, IssueSolution
+from classes import UnsolvedIssue, IssueSolution, MinerModelStats
 
 from simple_parsing.helpers.flatten import FlattenedAccess
 from simple_parsing.helpers.serialization.serializable import FrozenSerializable
@@ -126,4 +126,7 @@ def generate_code_patch(model_name: str, unsolved_issue: UnsolvedIssue) -> Issue
         return_type="info_trajectory",
     )
     logger.info(f"Finished running sweagent. Received info: {info}")
-    return IssueSolution(patch=info["submission"])
+    return IssueSolution(
+        patch=info["submission"],
+        model_stats=MinerModelStats.model_validate(info["model_stats"])
+    )
