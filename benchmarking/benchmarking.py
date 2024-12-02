@@ -7,8 +7,7 @@ from miner_utils import generate_code_patch, UnsolvedIssue
 from classes import IngestionHeuristics, GeneratedProblemStatement, ProblemGeneratorParameters, FilePair
 
 from ingest import get_all_filepairs
-from gen_problem import generate_problem_statement
-from clients import logger
+from benchmarking.generate_problem import generate_problem_statement
 
 SAMPLE_TEMPLATE = Template(
     """
@@ -49,32 +48,30 @@ def benchmark():
         min_file_content_len=50,
     )
 
-    problem_generator_params = ProblemGeneratorParameters(
-        filepair_selection_logic=highest_cosine_filepair_selector,
-        prompt_template=SAMPLE_TEMPLATE,
-    )
-
-    current_dir = Path.cwd()
-    sample_repo = (current_dir.parent / "seaborn").resolve()
+    current_dir = Path(__file__).parent
+    sample_repo = current_dir.parent / "sample-repo"
     print(config)
     repos = config.keys()
 
     repo_to_problem_statement = {}
 
     for repo in repos:
-        generated_problem_statements = benchmark_single_respository(
+        problem_generator_params = ProblemGeneratorParameters(
+            filepair_selection_logic=highest_cosine_filepair_selector,
+            prompt_template=SAMPLE_TEMPLATE,
+            num_problems_to_gen=config[repo]["problems"],
+            problem_gen_model=config[repo]["agent_llm"]
+        )
+        
+        generated_problem_statements = generate_problems_for_single_repo(
             repo_path=sample_repo,
             ingestion_heuristics=ingestion_heuristics,
-            problem_generation_params=ProblemGeneratorParameters(
-                **problem_generator_params,
-                num_problems_to_gen=config[repo]["problems"],
-                problem_gen_model=config[repo]["agent_llm"]
-            )
+            problem_generation_params=problem_generator_params
         )
 
         repo_to_problem_statement[repo] = generated_problem_statements
 
-def benchmark_single_respository(
+def generate_problems_for_single_repo(
     repo_path: Path,
     ingestion_heuristics: IngestionHeuristics,
     problem_generation_params: ProblemGeneratorParameters
@@ -110,6 +107,7 @@ def highest_cosine_filepair_selector(file_pairs: List[FilePair]) -> FilePair:
     )[0]
 
     return selected_file_pair
+
 
 if __name__ == "__main__":
     benchmark()

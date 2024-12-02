@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Callable
 from jinja2 import Template
+from pydantic import BaseModel
 
 @dataclass 
 class IngestionHeuristics:
@@ -42,3 +43,13 @@ class GeneratedProblemStatement:
     prompt: str
     model: str
     problem_statement: str
+
+# We use pydantic for some classes because OpenAI json output can structure based on that
+class ListOfGeneratedProblems(BaseModel):
+    generated_problem_statements: list[str]
+
+class MinerOutputScore(BaseModel):
+    addresses_problem_in_statement: float
+    logical_solution: float
+    brevity_and_cleanliness_of_code: float
+    potential_bugs_generated: float
