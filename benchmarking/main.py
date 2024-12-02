@@ -7,7 +7,7 @@ from miner_utils import generate_code_patch, UnsolvedIssue
 from classes import IngestionHeuristics, GeneratedProblemStatement, ProblemGeneratorParameters, FilePair, FullyScoredProblem
 
 from ingest import get_all_filepairs
-from benchmarking.generate_problem import generate_problem_statement
+from generate_problem import generate_problem_statement
 from grade_output import grade_miner_solution
 
 PROBLEM_STATEMENT_TEMPLATE = Template(
