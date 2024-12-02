@@ -5,9 +5,11 @@ import yaml
 
 from miner_utils import generate_code_patch, UnsolvedIssue
 from classes import IngestionHeuristics, GeneratedProblemStatement, ProblemGeneratorParameters, FilePair, FullyScoredProblem
+import pandas as pd
 
 from ingest import get_all_filepairs
 from generate_problem import generate_problem_statement
+from tabulate import tabulate
 from grade_output import grade_miner_solution
 
 PROBLEM_STATEMENT_TEMPLATE = Template(
@@ -68,6 +70,27 @@ def parse_yaml():
 
     return config
 
+
+def flatten_and_display_solutions(solutions):
+    # Flatten the solutions dictionary
+    flat_data = []
+    for repo, problems in solutions.items():
+        for problem in problems:
+            flat_data.append([
+                repo,
+                problem.generated_problem_statement.problem_statement[:250],
+                problem.generated_problem_statement.model,
+                problem.miner_solution_patch[:250],
+                problem.miner_output_score
+            ])
+
+    # Define headers
+    headers = ["Repository", "Problem Statement", "Model", "Solution Patch", "Output Score"]
+
+    # Print the table
+    print(tabulate(flat_data, headers=headers, tablefmt="fancy_grid"))
+
+
 def main():
     config = parse_yaml()
 
@@ -112,18 +135,22 @@ def main():
             score_for_solution = grade_miner_solution(
                 grader_system_prompt=GRADER_SYSTEM_PROMPT,
                 generated_problem_statement=problem,
-                miner_solution=solution
+                miner_solution=solution.patch,
             )
 
             solutionset_for_repo.append(FullyScoredProblem(
                 generated_problem_statement=problem,
-                miner_solution_patch=solution,
+                miner_solution_patch=solution.patch,
                 miner_output_score=score_for_solution
             ))
 
 
         solutions[repo] = solutionset_for_repo
-    
+
+        print("Obtained solutions. Displaying them in a table...")
+        flatten_and_display_solutions(solutions)
+        print("Finished displaying solutions in table")
+
 
 def generate_problems_for_single_repo(
     repo_path: Path,
