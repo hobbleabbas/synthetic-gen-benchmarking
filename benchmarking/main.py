@@ -101,7 +101,6 @@ def main():
 
     current_dir = Path(__file__).parent
     sample_repo = current_dir.parent / "seaborn"
-    print(config)
     repos = config.keys()
 
     solutions = {}
@@ -113,44 +112,77 @@ def main():
             num_problems_to_gen=config[repo]["problems"],
             problem_gen_model=config[repo]["agent_llm"]
         )
-        
-        generated_problem_statements = generate_problems_for_single_repo(
-            repo_path=sample_repo,
-            ingestion_heuristics=ingestion_heuristics,
-            problem_generation_params=problem_generator_params
-        )
 
-        solutionset_for_repo = []
+        if config[repo].get("fixed_problem") and len(config[repo]["fixed_problem"]) > 0:
+            print(f"Found fixed problem statement for {repo} repo. Generating solution with {config[repo]["agent_llm"][0]} model...")
 
-        for problem in generated_problem_statements:
-            # Run miner to generate a solution, then score the solution and create a FullyScoredProblem object, with the problem statement, solution diff, and generated grade
             solution = generate_code_patch(
                 model_name=config[repo]["agent_llm"][0],
                 unsolved_issue=UnsolvedIssue(
-                    desc=problem.problem_statement,
+                    desc=config[repo]["fixed_problem"],
                     local_code_path=sample_repo
                 )
             )
 
+            problem_statement = GeneratedProblemStatement(
+                prompt="No prompt provided. Fixed problem statement",
+                problem_statement=config[repo]["fixed_problem"],
+                model=config[repo]["agent_llm"][0]
+            )
+
             score_for_solution = grade_miner_solution(
                 grader_system_prompt=GRADER_SYSTEM_PROMPT,
-                generated_problem_statement=problem,
+                generated_problem_statement=problem_statement,
                 miner_solution=solution.patch,
             )
 
-            solutionset_for_repo.append(FullyScoredProblem(
-                generated_problem_statement=problem,
+            fully_scored_problem = FullyScoredProblem(
+                generated_problem_statement=problem_statement,
                 miner_solution_patch=solution.patch,
                 miner_output_score=score_for_solution
-            ))
+            )
+
+            print("Generated solution for fixed problem.")
+            print(fully_scored_problem)
 
 
-        solutions[repo] = solutionset_for_repo
+        else:
+            generated_problem_statements = generate_problems_for_single_repo(
+                repo_path=sample_repo,
+                ingestion_heuristics=ingestion_heuristics,
+                problem_generation_params=problem_generator_params
+            )
 
-        print("Obtained solutions. Displaying them in a table...")
-        flatten_and_display_solutions(solutions)
-        print("Finished displaying solutions in table")
+            solutionset_for_repo = []
 
+            for problem in generated_problem_statements:
+                # Run miner to generate a solution, then score the solution and create a FullyScoredProblem object, with the problem statement, solution diff, and generated grade
+                solution = generate_code_patch(
+                    model_name=config[repo]["agent_llm"][0],
+                    unsolved_issue=UnsolvedIssue(
+                        desc=problem.problem_statement,
+                        local_code_path=sample_repo
+                    )
+                )
+
+                score_for_solution = grade_miner_solution(
+                    grader_system_prompt=GRADER_SYSTEM_PROMPT,
+                    generated_problem_statement=problem,
+                    miner_solution=solution.patch,
+                )
+
+                solutionset_for_repo.append(FullyScoredProblem(
+                    generated_problem_statement=problem,
+                    miner_solution_patch=solution.patch,
+                    miner_output_score=score_for_solution
+                ))
+
+
+            solutions[repo] = solutionset_for_repo
+
+            print("Obtained solutions. Displaying them in a table...")
+            flatten_and_display_solutions(solutions)
+            print("Finished displaying solutions in table")
 
 def generate_problems_for_single_repo(
     repo_path: Path,
