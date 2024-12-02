@@ -1,7 +1,7 @@
 from classes import GeneratedProblemStatement, MinerOutputScore
 from clients import OPENAI_CLIENT
 
-def grade_output(
+def grade_miner_solution(
     grader_system_prompt: str,
     generated_problem_statement: GeneratedProblemStatement,
     miner_solution: str

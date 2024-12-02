@@ -44,6 +44,15 @@ class GeneratedProblemStatement:
     model: str
     problem_statement: str
 
+@dataclass
+class UnsolvedIssue:
+    desc: str
+    local_code_path: Path
+
+@dataclass
+class IssueSolution:
+    patch: str
+
 # We use pydantic for some classes because OpenAI json output can structure based on that
 class ListOfGeneratedProblems(BaseModel):
     generated_problem_statements: list[str]
@@ -54,6 +63,7 @@ class MinerOutputScore(BaseModel):
     brevity_and_cleanliness_of_code: float
     potential_bugs_generated: float
 
+@dataclass
 class FullyScoredProblem:
     generated_problem_statement: GeneratedProblemStatement
     miner_solution_patch: str

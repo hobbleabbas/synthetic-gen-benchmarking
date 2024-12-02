@@ -4,6 +4,8 @@ import logging
 from dataclasses import dataclass
 from pathlib import Path
 
+from classes import UnsolvedIssue, IssueSolution
+
 from simple_parsing.helpers.flatten import FlattenedAccess
 from simple_parsing.helpers.serialization.serializable import FrozenSerializable
 from sweagent.agent.agents import Agent
@@ -78,15 +80,6 @@ class ScriptArguments(FlattenedAccess, FrozenSerializable):
             + f"__c-{per_instance_cost_limit:.2f}__install-{int(install_env)}"
             + (f"__{self.suffix}" if self.suffix else "")
         )
-
-@dataclass
-class UnsolvedIssue:
-    desc: str
-    local_code_path: Path
-
-@dataclass
-class IssueSolution:
-    patch: str
 
 def create_script_arguments(model_name: str, unsolved_issue: UnsolvedIssue) -> ScriptArguments:
     swe_agent_root = Path("../SWE-agent")
