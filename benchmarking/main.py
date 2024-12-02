@@ -88,7 +88,7 @@ def flatten_and_display_solutions(solutions):
     headers = ["Repository", "Problem Statement", "Model", "Solution Patch", "Output Score"]
 
     # Print the table
-    print(tabulate(flat_data, headers=headers, tablefmt="fancy_grid"))
+    print(tabulate(flat_data, headers=headers, tablefmt="fancy_grid", stralign="left"))
 
 
 def main():
