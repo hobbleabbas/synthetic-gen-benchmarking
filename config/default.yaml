@@ -1,6 +1,6 @@
 mwaskom/seaborn:
   problems: 10
-  agent_llm: ["gpt-4o"]
+  agent_llm: ["gpt4o"]
 pytest-dev/pytest:
   problems: 5
   agent_llm: ["claude-sonnet-3.5"]

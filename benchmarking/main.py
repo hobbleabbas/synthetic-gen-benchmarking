@@ -77,7 +77,7 @@ def main():
     )
 
     current_dir = Path(__file__).parent
-    sample_repo = current_dir.parent / "sample-repo"
+    sample_repo = current_dir.parent / "seaborn"
     print(config)
     repos = config.keys()
 
@@ -102,7 +102,7 @@ def main():
         for problem in generated_problem_statements:
             # Run miner to generate a solution, then score the solution and create a FullyScoredProblem object, with the problem statement, solution diff, and generated grade
             solution = generate_code_patch(
-                model_name=config[repo]["agent_llm"],
+                model_name=config[repo]["agent_llm"][0],
                 unsolved_issue=UnsolvedIssue(
                     desc=problem.problem_statement,
                     local_code_path=sample_repo
