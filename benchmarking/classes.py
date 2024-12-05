@@ -49,6 +49,7 @@ class GeneratedProblemStatement:
     prompt: str
     model: str
     problem_statement: str
+    dynamic_checklist: list[str]
     model_stats: Optional[ValidatorModelStats] = None
 
 @dataclass
@@ -75,9 +76,13 @@ class IssueSolution:
     patch: str
     model_stats: Optional[MinerModelStats] = None
 
+class GeneratedProblem(BaseModel):
+    problem_statement: str
+    dynamic_checklist: list[str]
+
 # We use pydantic for some classes because OpenAI json output can structure based on that
 class ListOfGeneratedProblems(BaseModel):
-    generated_problem_statements: list[str]
+    generated_problem_statements: list[GeneratedProblem]
 
 class MinerOutputScore(BaseModel):
     addresses_problem_in_statement: float

@@ -19,6 +19,7 @@ PROBLEM_STATEMENT_TEMPLATE = Template(
     """
     You are a skilled software engineering assistant. You will be provided with multiple files as context. Each file will contain portions of code, documentation, or relevant information about a software system. Your task is to come up with a specific software engineering problem that requires a solution to involve at least two of these files. You will generate a list of these problems, in the generated_problems array response.
     
+    Further, once you have a problem statement, generate a checklist of points to consider and things that should be present in the solution (for example, are the correct Github API calls made if its a function that interfaces with the api). Generate several of these into dynamic_checklist field.
     Some additional guidelines are:
     - Do not output anything other than software engineering problem
     - The problem description should be very detailed and meticulous. It should contain sufficient context such that someone equipped with the codebase and your problem statement will have enough information to implement
@@ -71,6 +72,7 @@ def parse_yaml():
     with open(config_path, 'r') as f:
         config = yaml.safe_load(f)
 
+    print('found config', config)
     return config
 
 
@@ -122,6 +124,7 @@ def create_problem_statements(config, repo, repo_path, problems, ingestion_heuri
                 prompt="N/A",
                 model="N/A",
                 problem_statement=text,
+                dynamic_checklist=[],
                 model_stats=ValidatorModelStats(
                     input_tokens=0,
                     output_tokens=0,
@@ -165,6 +168,7 @@ def main():
             config, repo, sample_repo, problems, ingestion_heuristics
         )
 
+        print(f"Created problem statements: \n {problem_statements}",)
         solutionset_for_repo: List[FullyScoredProblem] = []
         for problem, llm in itertools.product(problem_statements, config[repo]["agent_llm"]):
             print(f"Generating code patch with LLM {llm} and problem '{problem.problem_statement[:20]}'...")

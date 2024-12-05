@@ -86,6 +86,7 @@ if __name__ == "__main__":
         generated_problem_statement=GeneratedProblemStatement(
             prompt="",
             problem_statement="Process data with o(n) complexity. Create a loop to do this",
+            dynamic_checklist=[],
             model_stats=ValidatorModelStats(8000, 8000, 0.2),
             model="gpt-4o"
         ),

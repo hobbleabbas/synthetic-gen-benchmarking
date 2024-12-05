@@ -2,7 +2,7 @@ from typing import List
 
 from model_pricing import calculate_price
 from classes import FilePair, ProblemGeneratorParameters, GeneratedProblemStatement, ListOfGeneratedProblems, \
-    ValidatorModelStats
+    ValidatorModelStats, GeneratedProblem
 from clients import OPENAI_CLIENT
 
 
@@ -34,11 +34,12 @@ def generate_problem_statements(
         GeneratedProblemStatement(
             prompt=prompt_text,
             model=parameters.problem_gen_model,
-            problem_statement=statement,
+            problem_statement=statement.problem_statement,
+            dynamic_checklist=statement.dynamic_checklist,
             model_stats=ValidatorModelStats(
                 input_tokens=prompt_tokens,
                 output_tokens=completion_tokens,
                 cost=cost,
-            )
+            ),
         ) for statement in parsed_response
     ]
