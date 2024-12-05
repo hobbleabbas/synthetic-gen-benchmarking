@@ -99,7 +99,7 @@ def flatten_and_display_solutions(solutions):
 
     # Print the table
     print(tabulate(flat_data, headers=headers, tablefmt="fancy_grid", stralign="left"))
-    import ipdb; ipdb.set_trace()
+    # import ipdb; ipdb.set_trace()
 
 def create_problem_statements(config, repo, repo_path, problems, ingestion_heuristics) -> List[GeneratedProblemStatement]:
     if isinstance(problems, int):
