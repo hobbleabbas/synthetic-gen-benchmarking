@@ -20,6 +20,7 @@ def grade_miner_solution(
     CONTEXT_FOR_SOLUTION = f"""
     Problem Statement: {generated_problem_statement.problem_statement}
     patch: {cleaned_patch_context}
+    Checklist to consider: {generated_problem_statement.dynamic_checklist}. For each item on the dynamic checklist, attach a corresponding score (a float, 0 to 1) in the dynamic checklist list of the output. This output length should be the same as the numebr of elements on the checklist of items to consider.
     Affected Files:
     {generated_problem_statement.prompt}    
     """
@@ -86,7 +87,7 @@ if __name__ == "__main__":
         generated_problem_statement=GeneratedProblemStatement(
             prompt="",
             problem_statement="Process data with o(n) complexity. Create a loop to do this",
-            dynamic_checklist=[],
+            dynamic_checklist=["grade this 0", "grade this 1", "grade this 0"],
             model_stats=ValidatorModelStats(8000, 8000, 0.2),
             model="gpt-4o"
         ),

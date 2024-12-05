@@ -89,6 +89,7 @@ class MinerOutputScore(BaseModel):
     logical_solution: float
     brevity_and_cleanliness_of_code: float
     potential_bugs_generated: float
+    dynamic_checklist_scores: list[float]
 
 @dataclass
 class FullyScoredProblem:
