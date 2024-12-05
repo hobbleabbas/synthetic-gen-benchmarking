@@ -9,7 +9,7 @@ from jinja2 import Template
 from tabulate import tabulate
 
 from classes import IngestionHeuristics, GeneratedProblemStatement, ProblemGeneratorParameters, FilePair, \
-    FullyScoredProblem, ValidatorModelStats
+    FullyScoredProblem, ValidatorModelStats, MinerOutputScore
 from generate_problem import generate_problem_statements
 from grade_output import grade_miner_solution
 from ingest import get_all_filepairs
@@ -81,11 +81,24 @@ def flatten_and_display_solutions(solutions):
     def wrap_text(text, width=50):
         return "\n".join(textwrap.wrap(text, width=width))
 
+    def compute_overall_score(miner_output_score: MinerOutputScore) -> float:
+        DYNAMIC_CHECKLIST_WEIGHT = 0.2
+        ADDRESSES_PROBLEM_WEIGHT = 0.3
+        LOGICAL_SOLUTION_WEIGHT = 0.25
+        BREVITY_WEIGHT = 0.05
+        POTENTIAL_BUGS_WEIGHT = 0.2
+        
+        return DYNAMIC_CHECKLIST_WEIGHT * statistics.mean(vars(miner_output_score.dynamic_checklist_scores).values()) + \
+            ADDRESSES_PROBLEM_WEIGHT * miner_output_score.addresses_problem_in_statement + \
+            LOGICAL_SOLUTION_WEIGHT * miner_output_score.logical_solution + \
+            BREVITY_WEIGHT * miner_output_score.brevity_and_cleanliness_of_code + \
+            POTENTIAL_BUGS_WEIGHT * miner_output_score.potential_bugs_generated
+
     # Flatten the solutions dictionary
     flat_data = []
     for repo, problems in solutions.items():
         for problem in problems:
-            overall_score = str(statistics.mean(vars(problem.miner_output_score).values()))
+            overall_score = compute_overall_score(problem.miner_output_score)
             flat_data.append([
                 wrap_text(repo, width=30),
                 wrap_text(problem.generated_problem_statement.problem_statement[:100] + "...", width=50),
