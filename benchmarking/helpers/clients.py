@@ -1,30 +1,37 @@
-
 import logging
-from datetime import datetime
-
-import posthog
 import os
-import pytz
+from datetime import datetime
+from logging import Logger
+from typing import Final
 
 import openai
-from typing import Final
+import posthog
+import pytz
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 class ESTFormatter(logging.Formatter):
     def formatTime(self, record, datefmt=None):
         est = pytz.timezone("America/New_York")
         ct = datetime.fromtimestamp(record.created, est)
         return ct.strftime("%Y-%m-%d %H:%M:%S")
+
     def format(self, record):
         # Pad the level name to 5 characters
         record.levelname = f"{record.levelname:<5}"
         return super().format(record)
 
+
 formatter = ESTFormatter('%(asctime)s - %(filename)s:%(lineno)d [%(levelname)s] %(message)s')
+
 
 class PostHogHandler(logging.Handler):
     def __init__(self):
         super().__init__()
         self.setFormatter(formatter)
+
     def emit(self, record):
         try:
             event_id = getattr(record, 'event_id', None) or record.getMessage()
@@ -44,20 +51,20 @@ class PostHogHandler(logging.Handler):
             self.handleError(record)
 
 
-def setup_logger():
+def setup_logger() -> Logger:
     # Clear any existing handlers to avoid conflicts
     logger = logging.getLogger(__name__)
     if logger.hasHandlers():
         logger.handlers.clear()
-    
+
     logger.setLevel(logging.DEBUG)
-    
+
     # Create formatter and console handler
     formatter = ESTFormatter('%(asctime)s - %(filename)s:%(lineno)d [%(levelname)s] %(message)s')
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
-    
+
     # Add PostHog handler if environment variables are set
     posthog_enabled = False
     if os.environ.get("POSTHOG_KEY") and os.environ.get("POSTHOG_HOST"):
@@ -68,7 +75,7 @@ def setup_logger():
             posthog_enabled = True
         except Exception as e:
             logger.warning(f"Failed to initialize PostHog handler: {e}")
-    
+
     # Attach the posthog_enabled flag to the logger
     logger.posthog_enabled = posthog_enabled
     return logger
