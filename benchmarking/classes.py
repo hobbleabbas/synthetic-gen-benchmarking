@@ -70,6 +70,7 @@ class MinerModelStats(BaseModel):
     tokens_received: int
     tokens_sent: int
     total_cost: float
+    duration_s: float
 
 @dataclass
 class IssueSolution:

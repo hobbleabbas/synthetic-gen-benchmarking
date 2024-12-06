@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import logging
+import time
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Tuple, List
+
+from sweagent.types import AgentInfo, Trajectory, TrajectoryStep
 
 from classes import UnsolvedIssue, IssueSolution, MinerModelStats
 
@@ -118,15 +122,31 @@ def generate_code_patch(model_name: str, unsolved_issue: UnsolvedIssue) -> Issue
     trajectories_dir.mkdir(exist_ok=True)
 
     logger.info("Running sweagent...")
-    info, trajectory = agent.run(
+
+    info: AgentInfo
+    trajectory_steps: List[TrajectoryStep]
+
+    start_time = time.time()
+    info, trajectory_steps = agent.run(
         setup_args={"issue": getattr(env, "query", None), "files": [], "test_files": [], "tests": []},
         env=env,
         observation=observation,
         traj_dir=trajectories_dir,
         return_type="info_trajectory",
     )
-    logger.info(f"Finished running sweagent. Received info: {info}")
+    duration_s = time.time() - start_time
+
+    if not (info["exit_status"] == "submitted" and info.get("submission") is not None):
+        raise ValueError(f"SWE-agent failed to submit. Ran for {duration_s:.2f}s. Info: {info}")
+
+    readable_info = {
+        k: (v if k not in ["edited_files30", "submission", "edited_files50"] else f"{v[:100]}...")
+        for k, v in info.items()
+    }
+    logger.info(f"Finished running sweagent, ran for {duration_s:.2f}s. Received info: {readable_info}")
     return IssueSolution(
         patch=info["submission"],
-        model_stats=MinerModelStats.model_validate(info["model_stats"])
+        model_stats=MinerModelStats.model_validate(
+            info["model_stats"] | dict(duration_s=duration_s)
+        )
     )

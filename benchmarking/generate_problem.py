@@ -17,8 +17,16 @@ def generate_problem_statements(
         )
     )
 
+    model_map = {
+        "gpt4omini": "gpt-4o-mini",
+        "gpt4o": "gpt-4o"
+    }
+    model = parameters.problem_gen_model if parameters.problem_gen_model not in model_map \
+        else model_map[parameters.problem_gen_model]
+
+
     completion = OPENAI_CLIENT.beta.chat.completions.parse(
-        model=parameters.problem_gen_model,
+        model=model,
         messages=[
             {"role": "system", "content": prompt_text},
             {"role": "user", "content": f"Generate the list of problem statements. Generate exactly {parameters.num_problems_to_gen} statements, no more and no less"},
@@ -28,12 +36,12 @@ def generate_problem_statements(
 
     parsed_response = completion.choices[0].message.parsed.generated_problem_statements
     prompt_tokens, completion_tokens = completion.usage.prompt_tokens, completion.usage.completion_tokens
-    cost = calculate_price(parameters.problem_gen_model, prompt_tokens, completion_tokens)
+    cost = calculate_price(model, prompt_tokens, completion_tokens)
 
     return [
         GeneratedProblemStatement(
             prompt=prompt_text,
-            model=parameters.problem_gen_model,
+            model=model,
             problem_statement=statement.problem_statement,
             dynamic_checklist=statement.dynamic_checklist,
             model_stats=ValidatorModelStats(

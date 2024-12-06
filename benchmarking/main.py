@@ -1,6 +1,8 @@
+import csv
 import itertools
 import statistics
 import textwrap
+from operator import itruediv
 from pathlib import Path
 from typing import List, Dict
 
@@ -76,6 +78,39 @@ def parse_yaml():
     return config
 
 
+def save_to_csv(data, file_path="solutions.csv"):
+    """
+    Save or append the given data to a CSV file.
+
+    :param data: A list of rows where each row is a list of values.
+    :param file_path: The path to the CSV file.
+    """
+    headers = [
+        "Repo",
+        "Problem",
+        "Model",
+        "Solution Patch",
+        "Output Score",
+        "Miner $",
+        "Validator $",
+        "Duration (s)",
+        "Miner $/min"
+    ]
+
+    # Check if file exists
+    file_exists = Path(file_path).is_file()
+
+    with open(file_path, mode='a', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+
+        # Write headers if the file does not exist
+        if not file_exists:
+            writer.writerow(headers)
+
+        # Write the data rows
+        writer.writerows(data)
+
+
 def flatten_and_display_solutions(solutions):
     # Helper to wrap text for better display
     def wrap_text(text, width=50):
@@ -99,22 +134,40 @@ def flatten_and_display_solutions(solutions):
     for repo, problems in solutions.items():
         for problem in problems:
             overall_score = compute_overall_score(problem.miner_output_score)
+
+            validator_cost = problem.generated_problem_statement.model_stats.cost
+            miner_cost = problem.miner_solution.model_stats.total_cost
+            duration_s = problem.miner_solution.model_stats.duration_s
+            miner_cost_per_min = miner_cost / duration_s * 60.
+
             flat_data.append([
                 wrap_text(repo, width=30),
                 wrap_text(problem.generated_problem_statement.problem_statement[:100] + "...", width=50),
                 problem.miner_llm,
                 wrap_text(problem.miner_solution.patch[:100] + "...", width=50),
-                wrap_text(overall_score, width=50),
-                problem.miner_solution.model_stats.total_cost,
-                problem.generated_problem_statement.model_stats.cost,
+                wrap_text(str(overall_score), width=50),
+                f"{miner_cost:.2f}",
+                f"{validator_cost:.2f}",
+                f"{duration_s:.2f}",
+                f"{miner_cost_per_min:.2f}",
             ])
 
     # Define headers
-    headers = ["Repository", "Problem Statement", "Model", "Solution Patch", "Output Score", "Miner $", "Validator $"]
+    headers = [
+        "Repo",
+        "Problem",
+        "Model",
+        "Solution Patch",
+        "Output Score",
+        "Miner $",
+        "Validator $",
+        "Duration (s)",
+        "Miner $/min"
+    ]
 
-    # Print the table
+    save_to_csv(flat_data)
+
     print(tabulate(flat_data, headers=headers, tablefmt="fancy_grid", stralign="left"))
-    # import ipdb; ipdb.set_trace()
 
 def create_problem_statements(config, repo, repo_path, problems, ingestion_heuristics) -> List[GeneratedProblemStatement]:
     if isinstance(problems, int):
