@@ -20,8 +20,8 @@ import tiktoken
 import json
 import pickle
 
-from clients import logger, OPENAI_CLIENT
-from classes import EmbeddedFile, FilePair, IngestionHeuristics
+from helpers.clients import logger, OPENAI_CLIENT
+from helpers.classes import EmbeddedFile, FilePair, IngestionHeuristics
 
 SAMPLE_INGESTION_HEURISTICS = IngestionHeuristics(
     min_files_to_consider_dir_for_problems=5,

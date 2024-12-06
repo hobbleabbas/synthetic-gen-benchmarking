@@ -1,22 +1,18 @@
-import csv
 import itertools
 import shutil
-import statistics
-import textwrap
 from pathlib import Path
 from typing import List, Dict
 
-import yaml
 from git import Repo
 from jinja2 import Template
-from tabulate import tabulate
 
-from classes import IngestionHeuristics, GeneratedProblemStatement, ProblemGeneratorParameters, FilePair, \
+from helpers.helpers import parse_yaml, highest_cosine_filepair_selector, flatten_and_display_solutions
+from helpers.classes import IngestionHeuristics, GeneratedProblemStatement, ProblemGeneratorParameters, FilePair, \
     FullyScoredProblem, ValidatorModelStats, MinerOutputScore
 from generate_problem import generate_problem_statements
-from grade_output import grade_miner_solution
+from grade_output import grade_miner_solution, compute_overall_score
 from ingest import get_all_filepairs
-from miner_utils import generate_code_patch, UnsolvedIssue
+from generate_solution import generate_code_patch, UnsolvedIssue
 
 PROBLEM_STATEMENT_TEMPLATE = Template(
     """
@@ -58,117 +54,6 @@ GRADER_SYSTEM_PROMPT = """
     If you do not know for sure that the patch perfectly and completely solved the problem, do not give it 1. Instead, give it some value between 0 and 1. Be harshly critical of the submissions you receive, think carefully to find ways in which they may have issues, and make sure the score is reduced appropriately. You will be penalized more harshly if you give scores that are too high than scores that are too low, so bias on the side of giving lower scores.
 """
 
-# Helper to sort filepairs
-def highest_cosine_filepair_selector(file_pairs: List[FilePair]) -> FilePair:
-    selected_file_pair = sorted(
-        file_pairs,
-        key=lambda x: float(x.cosine_similarity),
-        reverse=True
-    )[0]
-
-    return selected_file_pair
-
-def parse_yaml():
-    current_dir = Path.cwd()
-    config_path = current_dir.parent / "config" / "default.yaml"
-
-    with open(config_path, 'r') as f:
-        config = yaml.safe_load(f)
-
-    print('found config', config)
-    return config
-
-
-def save_to_csv(data, file_path="solutions.csv"):
-    """
-    Save or append the given data to a CSV file.
-
-    :param data: A list of rows where each row is a list of values.
-    :param file_path: The path to the CSV file.
-    """
-    headers = [
-        "Repo",
-        "Problem",
-        "Model",
-        "Solution Patch",
-        "Output Score",
-        "Miner $",
-        "Validator $",
-        "Duration (s)",
-        "Miner $/min"
-    ]
-
-    # Check if file exists
-    file_exists = Path(file_path).is_file()
-
-    with open(file_path, mode='a', newline='', encoding='utf-8') as csvfile:
-        writer = csv.writer(csvfile)
-
-        # Write headers if the file does not exist
-        if not file_exists:
-            writer.writerow(headers)
-
-        # Write the data rows
-        writer.writerows(data)
-
-
-def flatten_and_display_solutions(solutions):
-    # Helper to wrap text for better display
-    def wrap_text(text, width=50):
-        return "\n".join(textwrap.wrap(text, width=width))
-
-    def compute_overall_score(miner_output_score: MinerOutputScore) -> float:
-        DYNAMIC_CHECKLIST_WEIGHT = 0.2
-        ADDRESSES_PROBLEM_WEIGHT = 0.3
-        LOGICAL_SOLUTION_WEIGHT = 0.25
-        BREVITY_WEIGHT = 0.05
-        POTENTIAL_BUGS_WEIGHT = 0.2
-        
-        return DYNAMIC_CHECKLIST_WEIGHT * statistics.mean(vars(miner_output_score.dynamic_checklist_scores).values()) + \
-            ADDRESSES_PROBLEM_WEIGHT * miner_output_score.addresses_problem_in_statement + \
-            LOGICAL_SOLUTION_WEIGHT * miner_output_score.logical_solution + \
-            BREVITY_WEIGHT * miner_output_score.brevity_and_cleanliness_of_code + \
-            POTENTIAL_BUGS_WEIGHT * miner_output_score.potential_bugs_generated
-
-    # Flatten the solutions dictionary
-    flat_data = []
-    for repo, problems in solutions.items():
-        for problem in problems:
-            overall_score = compute_overall_score(problem.miner_output_score)
-
-            validator_cost = problem.generated_problem_statement.model_stats.cost
-            miner_cost = problem.miner_solution.model_stats.total_cost
-            duration_s = problem.miner_solution.model_stats.duration_s
-            miner_cost_per_min = miner_cost / duration_s * 60.
-
-            flat_data.append([
-                wrap_text(repo, width=30),
-                wrap_text(problem.generated_problem_statement.problem_statement[:100] + "...", width=50),
-                problem.miner_llm,
-                wrap_text(problem.miner_solution.patch[:100] + "...", width=50),
-                wrap_text(str(overall_score), width=50),
-                f"{miner_cost:.2f}",
-                f"{validator_cost:.2f}",
-                f"{duration_s:.2f}",
-                f"{miner_cost_per_min:.2f}",
-            ])
-
-    # Define headers
-    headers = [
-        "Repo",
-        "Problem",
-        "Model",
-        "Solution Patch",
-        "Output Score",
-        "Miner $",
-        "Validator $",
-        "Duration (s)",
-        "Miner $/min"
-    ]
-
-    save_to_csv(flat_data)
-
-    print(tabulate(flat_data, headers=headers, tablefmt="fancy_grid", stralign="left"))
 
 def create_problem_statements(config, repo, repo_path, problems, ingestion_heuristics) -> List[GeneratedProblemStatement]:
     if isinstance(problems, int):

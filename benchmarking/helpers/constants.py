@@ -84,8 +84,3 @@ PRICING_DATA_PER_MILLION_TOKENS = {
         "output": 15.00,
     }
 }
-
-def calculate_price(model_name: str, input_tokens: int, output_tokens: int) -> float:
-    pricing_dict = PRICING_DATA_PER_MILLION_TOKENS[model_name]
-    input_price, output_price = pricing_dict["input"], pricing_dict["output"]
-    return (input_tokens * input_price + output_tokens * output_price) / 1e6

@@ -8,7 +8,7 @@ from typing import Tuple, List
 
 from sweagent.types import AgentInfo, Trajectory, TrajectoryStep
 
-from classes import UnsolvedIssue, IssueSolution, MinerModelStats
+from helpers.classes import UnsolvedIssue, IssueSolution, MinerModelStats
 
 from simple_parsing.helpers.flatten import FlattenedAccess
 from simple_parsing.helpers.serialization.serializable import FrozenSerializable

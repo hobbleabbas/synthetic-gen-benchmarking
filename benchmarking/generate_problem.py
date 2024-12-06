@@ -1,9 +1,9 @@
 from typing import List
 
-from model_pricing import calculate_price
-from classes import FilePair, ProblemGeneratorParameters, GeneratedProblemStatement, ListOfGeneratedProblems, \
+from helpers.helpers import calculate_price
+from helpers.classes import FilePair, ProblemGeneratorParameters, GeneratedProblemStatement, ListOfGeneratedProblems, \
     ValidatorModelStats, GeneratedProblem
-from clients import OPENAI_CLIENT
+from helpers.clients import OPENAI_CLIENT
 
 
 def generate_problem_statements(
