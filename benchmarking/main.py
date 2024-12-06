@@ -1,12 +1,13 @@
 import csv
 import itertools
+import shutil
 import statistics
 import textwrap
-from operator import itruediv
 from pathlib import Path
 from typing import List, Dict
 
 import yaml
+from git import Repo
 from jinja2 import Template
 from tabulate import tabulate
 
@@ -213,6 +214,33 @@ def create_problem_statements(config, repo, repo_path, problems, ingestion_heuri
         )
     return problem_statements
 
+def clone_repo(author_name: str, repo_name: str, base_path: Path) -> Path:
+    """
+    Clone a GitHub repository to a specified directory under 'repos' and return the path.
+
+    :param author_name: GitHub username or organization name.
+    :param repo_name: Repository name.
+    :param base_path: Base path where the 'repos' directory will be created.
+    :return: Path to the cloned repository.
+    """
+    try:
+        repo_url = f"https://github.com/{author_name}/{repo_name}.git"
+
+        repos_dir = base_path / "repos"
+        repos_dir.mkdir(parents=True, exist_ok=True)
+
+        clone_to_path = repos_dir / repo_name
+        if clone_to_path.exists() and clone_to_path.is_dir():
+            shutil.rmtree(clone_to_path)
+            print(f"Directory {clone_to_path} has been removed.")
+
+        Repo.clone_from(repo_url, clone_to_path)
+        print(f"Repository cloned to {clone_to_path}")
+        return clone_to_path
+    except Exception as e:
+        print(f"Failed to clone repository: {e}")
+        raise
+
 def main():
     config = parse_yaml()
 
@@ -222,16 +250,19 @@ def main():
     )
 
     current_dir = Path.cwd()
-    # todo: make this dynamic from config file
-    sample_repo = current_dir.parent / "seaborn"
     repos = config.keys()
 
     solutions: Dict[str, List[FullyScoredProblem]] = {}
 
     for repo in repos:
+        author_name, repo_name = repo.split("/")
+        print(f"Cloning repo {repo}...")
+        local_repo_dir = clone_repo(author_name, repo_name, current_dir.parent)
+        print(f"Finished cloning repo {repo}")
+
         problems = config[repo]["problems"]
         problem_statements: List[GeneratedProblemStatement] = create_problem_statements(
-            config, repo, sample_repo, problems, ingestion_heuristics
+            config, repo, local_repo_dir, problems, ingestion_heuristics
         )
 
         print(f"Created problem statements: \n {problem_statements}",)
@@ -245,7 +276,7 @@ def main():
                     model_name=llm,
                     unsolved_issue=UnsolvedIssue(
                         desc=problem.problem_statement,
-                        local_code_path=sample_repo
+                        local_code_path=local_repo_dir
                     )
                 )
 
