@@ -1,5 +1,7 @@
 import csv
 import itertools
+import json
+import os
 import textwrap
 from pathlib import Path
 from pprint import pformat
@@ -8,7 +10,7 @@ from typing import List, Dict, Final, Union
 import yaml
 from tabulate import tabulate
 
-from .classes import FilePair, MinerOutputScore, FullyScoredProblem
+from .classes import FilePair, MinerOutputScore, FullyScoredProblem, convert_to_obj
 from .clients import logger
 from .constants import PRICING_DATA_PER_MILLION_TOKENS
 
@@ -54,7 +56,26 @@ def parse_yaml(config_path: Path) -> Dict:
     return config
 
 
-def save_to_csv(data: List[List[Union[float, int, str]]], file_path="solutions.csv") -> None:
+def save_full_data(solutions: Dict[str, List[FullyScoredProblem]], file_path: Path = Path("full_eval_data.json")) -> None:
+    full_data: List[Dict[str, List[FullyScoredProblem | Dict]]] = []
+
+    if file_path.exists() and file_path.is_file():
+        with open(file_path, 'r') as file:
+            try:
+                full_data = json.load(file)
+                if not isinstance(full_data, list):
+                    raise ValueError("Existing data is not a list. Cannot append.")
+            except json.JSONDecodeError:
+                pass
+
+    full_data.append(convert_to_obj(solutions))
+
+    # Write back to file
+    with open(file_path, 'w') as file:
+        json.dump(full_data, file, indent=4)
+
+
+def save_display_data(data: List[List[Union[float, int, str]]], file_path: str = "solutions.csv") -> None:
     """
     Save or append the given data to a CSV file.
 
@@ -70,7 +91,7 @@ def save_to_csv(data: List[List[Union[float, int, str]]], file_path="solutions.c
         "Miner $",
         "Validator $",
         "Duration (s)",
-        "Miner $/min"
+        "Miner $/min",
     ]
 
     # Check if file exists
@@ -86,14 +107,13 @@ def save_to_csv(data: List[List[Union[float, int, str]]], file_path="solutions.c
         # Write the data rows
         writer.writerows(data)
 
-
 def repeat_list(lst: List, num_repeats: int) -> List:
     return list(itertools.chain.from_iterable(
         [lst[:] for _ in range(num_repeats)]
     ))
 
 
-def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]], save_data: bool=True) -> None:
+def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]], should_save_data: bool=True) -> None:
     # Helper to wrap text for better display
     def wrap_text(text, width=50):
         return "\n".join(textwrap.wrap(text, width=width))
@@ -144,7 +164,8 @@ def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]]
         "Miner $/min"
     ]
 
-    if save_data:
-        save_to_csv(flat_data)
+    if should_save_data:
+        save_display_data(flat_data)
+        save_full_data(solutions)
 
     logger.info(tabulate(flat_data, headers=headers, tablefmt="fancy_grid", stralign="left"))

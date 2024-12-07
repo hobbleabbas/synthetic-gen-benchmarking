@@ -203,7 +203,7 @@ def main(config: Dict) -> None:
             ))
 
             logger.info(f"Obtained solution from model {llm}. Table so far...")
-            flatten_and_display_solutions(solutions)
+            flatten_and_display_solutions(solutions, should_save_data=False)
             logger.info(f"Finished displaying solutions, current model {llm}")
 
         logger.info("Obtained solutions. Displaying them in a table...")

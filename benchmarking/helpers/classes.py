@@ -1,9 +1,22 @@
-from dataclasses import dataclass
+from dataclasses import is_dataclass, dataclass, asdict
 from pathlib import Path
+from typing import Any
 from typing import List, Callable, Optional
 
 from jinja2 import Template
 from pydantic import BaseModel
+
+
+def convert_to_obj(data: Any) -> Any:
+    if is_dataclass(data):
+        return {k: convert_to_obj(v) for k, v in asdict(data).items()}
+    elif isinstance(data, BaseModel):
+        return {k: convert_to_obj(v) for k, v in data.dict().items()}
+    elif isinstance(data, list):
+        return [convert_to_obj(item) for item in data]
+    elif isinstance(data, dict):
+        return {k: convert_to_obj(v) for k, v in data.items()}
+    return data
 
 
 @dataclass
