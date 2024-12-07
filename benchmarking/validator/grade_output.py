@@ -1,9 +1,31 @@
+from typing import Final
+
 from helpers.classes import GeneratedProblemStatement, MinerOutputScore, IssueSolution, ValidatorModelStats
 from helpers.clients import OPENAI_CLIENT, logger
 
 
+GRADER_SYSTEM_PROMPT: Final[str] = """
+Instructions:
+You are tasked with evaluating a code patch to determine how well it addresses a specific problem. Please follow these steps:
+- Read the Problem Statement to understand the issue that needs to be resolved.
+- Review the Git Diff to see the changes introduced by the patch.
+- Examine the Affected Files to understand the context of the changes.
+
+Your Task:
+    - Assess the patch for correctness, completeness, and effectiveness in solving the problem.
+    - Fill out each field (addresses problem in statement, whether its a logical or dumb solution, brevity and how clean the code is, and how likely it is to introduce other bugs)
+    - Consider any potential side effects or issues introduced by the patch.
+    - Grade a concise solution higher than a lengthy one assuming both are correct and complete.
+    - Provide a numerical score between 0 and 1 representing how well the patch solves the problem:
+        - 1 means the patch perfectly and completely solves the problem.
+        - 0 means the patch does not address the problem at all.
+        - A score in-between these 2 numbers indicates partial completion, a higher number meaning the patch does a better job of solving the problem.
+    - If you do not know for sure that the patch perfectly and completely solved the problem, do not give it 1. Instead, give it some value between 0 and 1. Be harshly critical of the submissions you receive, think carefully to find ways in which they may have issues, and make sure the score is reduced appropriately. Create a list of reasons why they may not work, and penalize accordingly. You will be penalized more harshly if you give scores that are too high than scores that are too low, so bias on the side of giving lower scores.
+    - Give output in the presented format, and provide a thorough explanation of your reasoning in the `explanation_of_scores` field.
+"""
+
+
 def grade_miner_solution(
-        grader_system_prompt: str,
         generated_problem_statement: GeneratedProblemStatement,
         miner_solution: IssueSolution
 ) -> MinerOutputScore:
@@ -20,15 +42,15 @@ def grade_miner_solution(
     CONTEXT_FOR_SOLUTION = f"""
     Problem Statement: {generated_problem_statement.problem_statement}
     patch: {cleaned_patch_context}
-    Checklist to consider: {generated_problem_statement.dynamic_checklist}. For each item on the dynamic checklist, attach a corresponding score (a float, 0 to 1) in the dynamic checklist list of the output. This output length should be the same as the numebr of elements on the checklist of items to consider.
+    Checklist to consider: {generated_problem_statement.dynamic_checklist}. For each item on the dynamic checklist, attach a corresponding score (a float, 0 to 1) in the dynamic checklist list of the output. This output length should be the same as the number of elements on the checklist of items to consider.
     Affected Files:
-    {generated_problem_statement.prompt}    
+    {generated_problem_statement.prompt} 
     """
 
     completion = OPENAI_CLIENT.beta.chat.completions.parse(
         model='gpt-4o-2024-08-06',
         messages=[
-            {"role": "system", "content": grader_system_prompt},
+            {"role": "system", "content": GRADER_SYSTEM_PROMPT},
             {"role": "user", "content": CONTEXT_FOR_SOLUTION},
         ],
         response_format=MinerOutputScore,
@@ -64,25 +86,7 @@ if __name__ == "__main__":
             """
     )
 
-    GRADER_SYSTEM_PROMPT = """
-        Instructions:
-        You are tasked with evaluating a code patch to determine how well it addresses a specific problem. Please follow these steps:
-        Read the Problem Statement to understand the issue that needs to be resolved.
-        Review the Git Diff to see the changes introduced by the patch.
-        Examine the Affected Files to understand the context of the changes.
-        Your Task:
-        Assess the patch for correctness, completeness, and effectiveness in solving the problem.
-        Fill out each field (addresses problem in statement, whether its a logical or dumb solution, brevity and how clean the code is, and how likely it is to introduce other bugs)
-        Consider any potential side effects or issues introduced by the patch.
-        Grade a concise solution higher than a lengthy one assuming both are correct and complete.
-        Provide a percentage numerical score between 0 and 1 representing how well the patch solves the problem:
-        1 means the patch perfectly and completely solves the problem.
-        0 means the patch does not address the problem at all.
-        If you do not know for sure that the patch perfectly and completely solved the problem, do not give it 1. Instead, give it some value between 0 and 1. Be harshly critical of the submissions you receive, think carefully to find ways in which they may have issues, and make sure the score is reduced appropriately. You will be penalized more harshly if you give scores that are too high than scores that are too low, so bias on the side of giving lower scores.
-    """
-
     response = grade_miner_solution(
-        grader_system_prompt=GRADER_SYSTEM_PROMPT,
         generated_problem_statement=GeneratedProblemStatement(
             prompt="",
             problem_statement="Process data with o(n) complexity. Create a loop to do this",

@@ -99,11 +99,12 @@ class ListOfGeneratedProblems(BaseModel):
 
 
 class MinerOutputScore(BaseModel):
+    dynamic_checklist_scores: List[float]
     addresses_problem_in_statement: float
     logical_solution: float
     brevity_and_cleanliness_of_code: float
     potential_bugs_generated: float
-    dynamic_checklist_scores: List[float]
+    explanation_of_scores: str
 
 
 @dataclass

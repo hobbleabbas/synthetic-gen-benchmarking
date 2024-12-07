@@ -10,16 +10,16 @@ from dotenv import load_dotenv
 from git import Repo
 from jinja2 import Template
 
-from generate_problem import generate_problem_statements
-from generate_solution import generate_code_patch, UnsolvedIssue
-from grade_output import grade_miner_solution
+from validator.generate_problem import generate_problem_statements
+from miner.generate_solution import generate_code_patch
+from validator.grade_output import grade_miner_solution
 from helpers.classes import IngestionHeuristics, GeneratedProblemStatement, ProblemGeneratorParameters, \
-    FullyScoredProblem, ValidatorModelStats, IssueSolution
+    FullyScoredProblem, ValidatorModelStats, IssueSolution, UnsolvedIssue
 from helpers.classes import MinerOutputScore
 from helpers.clients import logger
 from helpers.helpers import parse_yaml, highest_cosine_filepair_selector, flatten_and_display_solutions, \
     SENTINEL_STRING_FAILURE_VALUE, SENTINEL_INT_FAILURE_VALUE, SENTINEL_FLOAT_FAILURE_VALUE, repeat_list
-from ingest import get_all_filepairs
+from validator.ingest import get_all_filepairs
 
 load_dotenv()
 
@@ -179,7 +179,7 @@ def main(config: Dict) -> None:
                     )
                 )
             except Exception:
-                logger.exception(f"Encountered error, skipping SWE-agent run. Problem: {problem}, llm: {llm}")
+                logger.exception(f"Encountered error, skipping SWE-agent run. Problem: {pformat(problem)}, llm: {llm}")
             finally:
                 time_to_solve_s = time.time() - start_time
 
@@ -188,7 +188,6 @@ def main(config: Dict) -> None:
             try:
                 if solution is not None:
                     miner_output_score = grade_miner_solution(
-                        grader_system_prompt=GRADER_SYSTEM_PROMPT,
                         generated_problem_statement=problem,
                         miner_solution=solution,
                     )
@@ -202,6 +201,10 @@ def main(config: Dict) -> None:
                 miner_output_score=miner_output_score,
                 time_to_solve_s=time_to_solve_s,
             ))
+
+            logger.info(f"Obtained solution from model {llm}. Table so far...")
+            flatten_and_display_solutions(solutions)
+            logger.info(f"Finished displaying solutions, current model {llm}")
 
         logger.info("Obtained solutions. Displaying them in a table...")
         flatten_and_display_solutions(solutions)

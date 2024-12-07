@@ -93,7 +93,7 @@ def repeat_list(lst: List, num_repeats: int) -> List:
     ))
 
 
-def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]]) -> None:
+def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]], save_data: bool=True) -> None:
     # Helper to wrap text for better display
     def wrap_text(text, width=50):
         return "\n".join(textwrap.wrap(text, width=width))
@@ -144,6 +144,7 @@ def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]]
         "Miner $/min"
     ]
 
-    save_to_csv(flat_data)
+    if save_data:
+        save_to_csv(flat_data)
 
     logger.info(tabulate(flat_data, headers=headers, tablefmt="fancy_grid", stralign="left"))

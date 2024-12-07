@@ -3,7 +3,8 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from pprint import pformat
+from typing import List, Final
 
 from simple_parsing.helpers.flatten import FlattenedAccess
 from simple_parsing.helpers.serialization.serializable import FrozenSerializable
@@ -20,6 +21,8 @@ from sweagent.types import AgentInfo, TrajectoryStep
 from helpers.classes import UnsolvedIssue, IssueSolution, MinerModelStats
 from helpers.clients import logger
 
+
+PER_INSTANCE_COST_LIMIT: Final[float] = 0.5  # in $
 
 @dataclass(frozen=True)
 class ActionsArguments(FlattenedAccess, FrozenSerializable):
@@ -91,12 +94,13 @@ def create_script_arguments(model_name: str, unsolved_issue: UnsolvedIssue) -> S
             repo_path=str(unsolved_issue.local_code_path),
             verbose=True,
             install_environment=True,
-            environment_setup=swe_agent_root / "config/environment_setup/seaborn.yaml"
+            environment_setup=str(swe_agent_root / "config/environment_setup/seaborn.yaml")
         ),
         skip_existing=False,
         agent=AgentArguments(
             model=ModelArguments(
                 model_name= model_name,
+                per_instance_cost_limit=PER_INSTANCE_COST_LIMIT,
             ),
             config_file=Path(swe_agent_root / "config/default_from_url.yaml"),
         ),
@@ -133,14 +137,14 @@ def generate_code_patch(model_name: str, unsolved_issue: UnsolvedIssue) -> Issue
     )
     duration_s = time.time() - start_time
 
-    if not (info["exit_status"] == "submitted" and info.get("submission") is not None):
-        raise ValueError(f"SWE-agent failed to submit. Ran for {duration_s:.2f}s. Info: {info}")
+    if info.get("submission") is None:
+        raise ValueError(f"SWE-agent failed to submit. Ran for {duration_s:.2f}s. Info: {pformat(info)}")
 
     readable_info = {
         k: (v if k not in ["edited_files30", "submission", "edited_files50"] else f"{v[:100]}...")
         for k, v in info.items()
     }
-    logger.info(f"Finished running sweagent, ran for {duration_s:.2f}s. Received info: {readable_info}")
+    logger.info(f"Finished running sweagent, ran for {duration_s:.2f}s. Received info: {pformat(readable_info)}")
     return IssueSolution(
         patch=info["submission"],
         model_stats=MinerModelStats.model_validate(
