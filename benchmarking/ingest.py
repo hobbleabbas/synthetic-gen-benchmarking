@@ -9,7 +9,9 @@ If you've changed heuristics, run get_all_filepairs(local_path, refresh=True)
 to regen the cache
 """
 
+import json
 import os
+import pickle
 from dataclasses import asdict
 from pathlib import Path
 from typing import *
@@ -17,11 +19,9 @@ from typing import List
 
 import numpy as np
 import tiktoken
-import json
-import pickle
 
-from helpers.clients import logger, OPENAI_CLIENT
 from helpers.classes import EmbeddedFile, FilePair, IngestionHeuristics
+from helpers.clients import logger, OPENAI_CLIENT
 
 SAMPLE_INGESTION_HEURISTICS = IngestionHeuristics(
     min_files_to_consider_dir_for_problems=5,
@@ -72,8 +72,8 @@ def evaluate_for_context(dir_path, repo_structure, heuristics: IngestionHeuristi
                         'contents': contents
                     }
                 )
-            except (UnicodeDecodeError, IOError) as e:
-                print(f"Warning: Could not read file {path}: {e}")
+            except (UnicodeDecodeError, IOError):
+                logger.exception(f"Warning: Could not read file {path}")
                 continue
 
         return files
@@ -113,7 +113,6 @@ def evaluate_for_context(dir_path, repo_structure, heuristics: IngestionHeuristi
         )
 
     if len(repo_structure['files']) >= heuristics.min_files_to_consider_dir_for_problems:
-        # print(dir_path)
         files = _retrieve_files_in_dir()
         embeddings = _embed_code(list(map(lambda file: file['contents'], files)))
         embedded_files = [
@@ -128,7 +127,6 @@ def evaluate_for_context(dir_path, repo_structure, heuristics: IngestionHeuristi
 
         most_similar_files = _find_most_similar_files(embedded_files)
 
-        # print(most_similar_files)
         return most_similar_files
     else:
         return []
@@ -208,4 +206,4 @@ if __name__ == "__main__":
     )
     
     for pair in file_pairs:
-        print(pair, type(pair))
+        logger.info(f"{pair} {type(pair)}")

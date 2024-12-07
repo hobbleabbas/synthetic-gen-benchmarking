@@ -1,5 +1,4 @@
 import itertools
-import logging
 import shutil
 import time
 from collections import defaultdict
@@ -11,20 +10,18 @@ from dotenv import load_dotenv
 from git import Repo
 from jinja2 import Template
 
-from helpers.classes import MinerOutputScore
 from generate_problem import generate_problem_statements
 from generate_solution import generate_code_patch, UnsolvedIssue
 from grade_output import grade_miner_solution
 from helpers.classes import IngestionHeuristics, GeneratedProblemStatement, ProblemGeneratorParameters, \
     FullyScoredProblem, ValidatorModelStats, IssueSolution
+from helpers.classes import MinerOutputScore
+from helpers.clients import logger
 from helpers.helpers import parse_yaml, highest_cosine_filepair_selector, flatten_and_display_solutions, \
-    SENTINEL_STRING_FAILURE_VALUE, SENTINEL_INT_FAILURE_VALUE, SENTINEL_FLOAT_FAILURE_VALUE
+    SENTINEL_STRING_FAILURE_VALUE, SENTINEL_INT_FAILURE_VALUE, SENTINEL_FLOAT_FAILURE_VALUE, repeat_list
 from ingest import get_all_filepairs
 
-
 load_dotenv()
-
-logger = logging.getLogger(__name__)
 
 PROBLEM_STATEMENT_TEMPLATE: Final[Template] = Template(
     """
@@ -65,12 +62,6 @@ GRADER_SYSTEM_PROMPT: Final[str] = """
     0 means the patch does not address the problem at all.
     If you do not know for sure that the patch perfectly and completely solved the problem, do not give it 1. Instead, give it some value between 0 and 1. Be harshly critical of the submissions you receive, think carefully to find ways in which they may have issues, and make sure the score is reduced appropriately. You will be penalized more harshly if you give scores that are too high than scores that are too low, so bias on the side of giving lower scores.
 """
-
-
-def repeat_list(lst: List, num_repeats: int) -> List:
-    return list(itertools.chain.from_iterable(
-        [lst[:] for _ in range(num_repeats)]
-    ))
 
 
 def create_problem_statements(

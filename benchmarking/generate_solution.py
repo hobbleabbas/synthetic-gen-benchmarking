@@ -1,14 +1,9 @@
 from __future__ import annotations
 
-import logging
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Tuple, List
-
-from sweagent.types import AgentInfo, Trajectory, TrajectoryStep
-
-from helpers.classes import UnsolvedIssue, IssueSolution, MinerModelStats
+from typing import List
 
 from simple_parsing.helpers.flatten import FlattenedAccess
 from simple_parsing.helpers.serialization.serializable import FrozenSerializable
@@ -20,8 +15,10 @@ from sweagent.environment.swe_env import SWEEnv
 from sweagent.environment.utils import (
     get_data_path_name,
 )
+from sweagent.types import AgentInfo, TrajectoryStep
 
-logger = logging.getLogger(__name__)
+from helpers.classes import UnsolvedIssue, IssueSolution, MinerModelStats
+from helpers.clients import logger
 
 
 @dataclass(frozen=True)

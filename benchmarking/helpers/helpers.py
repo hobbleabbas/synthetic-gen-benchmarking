@@ -1,5 +1,5 @@
 import csv
-import logging
+import itertools
 import textwrap
 from pathlib import Path
 from pprint import pformat
@@ -9,9 +9,8 @@ import yaml
 from tabulate import tabulate
 
 from .classes import FilePair, MinerOutputScore, FullyScoredProblem
+from .clients import logger
 from .constants import PRICING_DATA_PER_MILLION_TOKENS
-
-logger = logging.getLogger(__name__)
 
 SENTINEL_FLOAT_FAILURE_VALUE: Final[float] = -1.
 SENTINEL_INT_FAILURE_VALUE: Final[int] = -1
@@ -86,6 +85,12 @@ def save_to_csv(data: List[List[Union[float, int, str]]], file_path="solutions.c
 
         # Write the data rows
         writer.writerows(data)
+
+
+def repeat_list(lst: List, num_repeats: int) -> List:
+    return list(itertools.chain.from_iterable(
+        [lst[:] for _ in range(num_repeats)]
+    ))
 
 
 def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]]) -> None:

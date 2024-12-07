@@ -1,5 +1,5 @@
 from helpers.classes import GeneratedProblemStatement, MinerOutputScore, IssueSolution, ValidatorModelStats
-from helpers.clients import OPENAI_CLIENT
+from helpers.clients import OPENAI_CLIENT, logger
 
 
 def grade_miner_solution(
@@ -16,7 +16,7 @@ def grade_miner_solution(
         ]
     ).choices[0].message.content
 
-    print("Cleaned context: ", cleaned_patch_context, "\n\n")
+    logger.info(f"Cleaned context: {cleaned_patch_context}\n\n")
     CONTEXT_FOR_SOLUTION = f"""
     Problem Statement: {generated_problem_statement.problem_statement}
     patch: {cleaned_patch_context}
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         miner_solution=sample_diff
     )
 
-    print("Grade response", response)
+    logger.info(f"Grade response {response}")
 
 
 def generate_test_patch(repo_path: str, problem_statement: str) -> str:
