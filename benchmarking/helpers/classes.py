@@ -85,12 +85,46 @@ class GeneratedProblem(BaseModel):
 class ListOfGeneratedProblems(BaseModel):
     generated_problem_statements: list[GeneratedProblem]
 
+class MinerLLMEvaluation(BaseModel):
+    addresses_problem_in_statement: bool
+    logical_solution: bool
+    brevity_and_cleanliness_of_code: bool
+    potential_bugs_generated: bool
+    dynamic_checklist_scores: list[bool]
+
+@dataclass
+class OriginalRepoTestResults:
+    pass_previously: int
+    pass_after: int
+    fail_previously: int
+    fail_after: int
+
+@dataclass 
+class MinerSolutionTestResults:
+    pass_previously: int
+    pass_after: int
+    fail_previously: int
+    fail_after: int
+    synthetic_test_passed: bool
+
+@dataclass
+class MinerSolutionScore:
+    total_score: float
+    llm_evaluation: MinerLLMEvaluation
+    test_results: MinerSolutionTestResults
+    addresses_problem_in_statement_weight: float
+    logical_solution_weight: float
+    brevity_and_cleanliness_of_code_weight: float
+    potential_bugs_generated_weight: float
+    dynamic_checklist_scores_weight: float
+
 class MinerOutputScore(BaseModel):
     addresses_problem_in_statement: float
     logical_solution: float
     brevity_and_cleanliness_of_code: float
     potential_bugs_generated: float
     dynamic_checklist_scores: list[float]
+    total_score: float = 0
 
 @dataclass
 class FullyScoredProblem:

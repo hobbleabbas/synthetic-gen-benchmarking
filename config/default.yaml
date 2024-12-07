@@ -7,7 +7,7 @@ mwaskom/seaborn:
   # Can be either list of problems or an int.
   #   > problems: 5 means "generate 5 problem texts to eval on"
   #   > problems: [...] means "run eval on these specific problem texts"
-  problems: ["Create a unified data visualization function that combines the visual elements and styles from both the smooth kernel density plot with marginal histograms, and the joint kernel density estimate with a hue factor. The function should accept a dataset, select appropriate columns for x and y axes, optionally allow a hue parameter, and use Seaborn to generate a visualization that includes: 1) a smooth bivariate KDE plot with marginal histograms, and 2) a plot that highlights joint distribution with KDE while allowing for hue differentiation. This unified function should allow users to set custom configurations for styles such as 'white' or 'ticks'. Ensure it handles cases with and without the hue parameter and efficiently switches styles based on user preference."]
+  problems: 1
 
   # Single LLM used to generate problem statements. Not applicable if `problems` is a list of existing problem statements
   validator_llm: "gpt4omini"

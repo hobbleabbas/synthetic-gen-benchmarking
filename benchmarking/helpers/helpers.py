@@ -122,3 +122,9 @@ def flatten_and_display_solutions(solutions):
     save_to_csv(flat_data)
 
     print(tabulate(flat_data, headers=headers, tablefmt="fancy_grid", stralign="left"))
+
+def create_container_with_repo(repo_path: Path):
+    pass
+
+def run_tests_for_repo(repo_path: Path, patch: str):
+    pass

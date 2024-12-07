@@ -10,7 +10,7 @@ from helpers.helpers import parse_yaml, highest_cosine_filepair_selector, flatte
 from helpers.classes import IngestionHeuristics, GeneratedProblemStatement, ProblemGeneratorParameters, FilePair, \
     FullyScoredProblem, ValidatorModelStats, MinerOutputScore
 from generate_problem import generate_problem_statements
-from grade_output import grade_miner_solution, compute_overall_score
+from grade_output import grade_miner_solution
 from ingest import get_all_filepairs
 from generate_solution import generate_code_patch, UnsolvedIssue
 
