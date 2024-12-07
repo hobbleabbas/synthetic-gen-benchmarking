@@ -1,3 +1,4 @@
+from pprint import pformat
 from typing import Final
 
 from helpers.classes import GeneratedProblemStatement, MinerOutputScore, IssueSolution, ValidatorModelStats
@@ -38,7 +39,7 @@ def grade_miner_solution(
         ]
     ).choices[0].message.content
 
-    logger.info(f"Cleaned context: {cleaned_patch_context}\n\n")
+    logger.info(f"Cleaned context:\n{cleaned_patch_context}\n\n")
     CONTEXT_FOR_SOLUTION = f"""
     Problem Statement: {generated_problem_statement.problem_statement}
     patch: {cleaned_patch_context}
@@ -57,6 +58,7 @@ def grade_miner_solution(
     )
 
     parsed_response = completion.choices[0].message.parsed
+    logger.info(f"Parsed response:\n{pformat(parsed_response)}")
 
     if parsed_response is None:
         raise Exception("OpenAI did not grade miner output")
