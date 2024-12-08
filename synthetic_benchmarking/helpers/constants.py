@@ -1,3 +1,9 @@
+from typing import Final
+
+SENTINEL_FLOAT_FAILURE_VALUE: Final[float] = -1.
+SENTINEL_INT_FAILURE_VALUE: Final[int] = -1
+SENTINEL_STRING_FAILURE_VALUE: Final[str] = "N/A"
+
 PRICING_DATA_PER_MILLION_TOKENS = {
     "gpt-4o": {
         "input": 2.50,

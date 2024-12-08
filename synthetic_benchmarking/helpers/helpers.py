@@ -4,18 +4,15 @@ import json
 import textwrap
 from pathlib import Path
 from pprint import pformat
-from typing import List, Dict, Final, Union
+from typing import List, Dict, Union
 
 import yaml
 from tabulate import tabulate
 
 from synthetic_benchmarking.helpers.classes import FilePair, MinerOutputScore, FullyScoredProblem, convert_to_obj
 from synthetic_benchmarking.helpers.clients import logger
-from synthetic_benchmarking.helpers.constants import PRICING_DATA_PER_MILLION_TOKENS
-
-SENTINEL_FLOAT_FAILURE_VALUE: Final[float] = -1.
-SENTINEL_INT_FAILURE_VALUE: Final[int] = -1
-SENTINEL_STRING_FAILURE_VALUE: Final[str] = "N/A"
+from synthetic_benchmarking.helpers.constants import PRICING_DATA_PER_MILLION_TOKENS, SENTINEL_FLOAT_FAILURE_VALUE, \
+    SENTINEL_STRING_FAILURE_VALUE
 
 
 def compute_overall_score(miner_output_score: MinerOutputScore) -> float:

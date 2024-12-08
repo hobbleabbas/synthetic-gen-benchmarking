@@ -16,8 +16,9 @@ from synthetic_benchmarking.helpers.classes import IngestionHeuristics, Generate
 from synthetic_benchmarking.helpers.classes import MinerOutputScore
 from synthetic_benchmarking.helpers.clients import logger
 from synthetic_benchmarking.helpers.helpers import parse_yaml, highest_cosine_filepair_selector, \
-    flatten_and_display_solutions, SENTINEL_STRING_FAILURE_VALUE, SENTINEL_INT_FAILURE_VALUE, \
-    SENTINEL_FLOAT_FAILURE_VALUE, repeat_list
+    flatten_and_display_solutions, repeat_list
+from synthetic_benchmarking.helpers.constants import SENTINEL_FLOAT_FAILURE_VALUE, SENTINEL_INT_FAILURE_VALUE, \
+    SENTINEL_STRING_FAILURE_VALUE
 from synthetic_benchmarking.miner.generate_solution import generate_code_patch
 from synthetic_benchmarking.validator.generate_problem import generate_problem_statements
 from synthetic_benchmarking.validator.grade_output import grade_miner_solution
