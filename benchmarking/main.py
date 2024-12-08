@@ -4,6 +4,7 @@ import time
 from collections import defaultdict
 from pathlib import Path
 from pprint import pformat
+from textwrap import dedent
 from typing import List, Dict, Optional, DefaultDict, Union, Final
 
 from dotenv import load_dotenv
@@ -24,7 +25,7 @@ from validator.ingest import get_all_filepairs
 load_dotenv()
 
 PROBLEM_STATEMENT_TEMPLATE: Final[Template] = Template(
-    """
+    dedent("""
     You are a skilled software engineering assistant. You will be provided with multiple files as context. Each file will contain portions of code, documentation, or relevant information about a software system. Your task is to come up with a specific software engineering problem that requires a solution to involve at least two of these files. You will generate a list of these problems, in the generated_problems array response.
     
     Further, once you have a problem statement, generate a checklist of points to consider and things that should be present in the solution (for example, are the correct Github API calls made if its a function that interfaces with the api). Generate several of these into dynamic_checklist field.
@@ -43,16 +44,16 @@ PROBLEM_STATEMENT_TEMPLATE: Final[Template] = Template(
     ```
     {% endfor %}
     ```
-    """
+    """)
 )
 
 GRADER_SYSTEM_PROMPT: Final[str] = """
-    Instructions:
+Instructions:
     You are tasked with evaluating a code patch to determine how well it addresses a specific problem. Please follow these steps:
     Read the Problem Statement to understand the issue that needs to be resolved.
     Review the Git Diff to see the changes introduced by the patch.
     Examine the Affected Files to understand the context of the changes.
-    Your Task:
+Your Task:
     Assess the patch for correctness, completeness, and effectiveness in solving the problem.
     Fill out each field (addresses problem in statement, whether its a logical or dumb solution, brevity and how clean the code is, and how likely it is to introduce other bugs)
     Consider any potential side effects or issues introduced by the patch.
