@@ -9,9 +9,9 @@ from typing import List, Dict, Final, Union
 import yaml
 from tabulate import tabulate
 
-from .classes import FilePair, MinerOutputScore, FullyScoredProblem, convert_to_obj
-from .clients import logger
-from .constants import PRICING_DATA_PER_MILLION_TOKENS
+from synthetic_benchmarking.helpers.classes import FilePair, MinerOutputScore, FullyScoredProblem, convert_to_obj
+from synthetic_benchmarking.helpers.clients import logger
+from synthetic_benchmarking.helpers.constants import PRICING_DATA_PER_MILLION_TOKENS
 
 SENTINEL_FLOAT_FAILURE_VALUE: Final[float] = -1.
 SENTINEL_INT_FAILURE_VALUE: Final[int] = -1

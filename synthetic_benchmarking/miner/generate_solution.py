@@ -18,9 +18,8 @@ from sweagent.environment.utils import (
 )
 from sweagent.types import AgentInfo, TrajectoryStep
 
-from helpers.classes import UnsolvedIssue, IssueSolution, MinerModelStats
-from helpers.clients import logger
-
+from synthetic_benchmarking.helpers.classes import UnsolvedIssue, IssueSolution, MinerModelStats
+from synthetic_benchmarking.helpers.clients import logger
 
 PER_INSTANCE_COST_LIMIT: Final[float] = 0.5  # in $
 

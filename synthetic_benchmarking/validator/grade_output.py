@@ -1,10 +1,10 @@
 from pprint import pformat
+from textwrap import dedent
 from typing import Final
 
-from helpers.classes import GeneratedProblemStatement, MinerOutputScore, IssueSolution, ValidatorModelStats
-from helpers.clients import OPENAI_CLIENT, logger
-from textwrap import dedent
-
+from synthetic_benchmarking.helpers.classes import GeneratedProblemStatement, MinerOutputScore, IssueSolution, \
+    ValidatorModelStats
+from synthetic_benchmarking.helpers.clients import OPENAI_CLIENT, logger
 
 GRADER_SYSTEM_PROMPT: Final[str] = """
 Instructions:

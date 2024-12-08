@@ -20,8 +20,8 @@ from typing import List
 import numpy as np
 import tiktoken
 
-from helpers.classes import EmbeddedFile, FilePair, IngestionHeuristics
-from helpers.clients import logger, OPENAI_CLIENT
+from synthetic_benchmarking.helpers.classes import EmbeddedFile, FilePair, IngestionHeuristics
+from synthetic_benchmarking.helpers.clients import logger, OPENAI_CLIENT
 
 SAMPLE_INGESTION_HEURISTICS = IngestionHeuristics(
     min_files_to_consider_dir_for_problems=5,

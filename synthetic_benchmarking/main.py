@@ -11,16 +11,17 @@ from dotenv import load_dotenv
 from git import Repo
 from jinja2 import Template
 
-from validator.generate_problem import generate_problem_statements
-from miner.generate_solution import generate_code_patch
-from validator.grade_output import grade_miner_solution
-from helpers.classes import IngestionHeuristics, GeneratedProblemStatement, ProblemGeneratorParameters, \
-    FullyScoredProblem, ValidatorModelStats, IssueSolution, UnsolvedIssue
-from helpers.classes import MinerOutputScore
-from helpers.clients import logger
-from helpers.helpers import parse_yaml, highest_cosine_filepair_selector, flatten_and_display_solutions, \
-    SENTINEL_STRING_FAILURE_VALUE, SENTINEL_INT_FAILURE_VALUE, SENTINEL_FLOAT_FAILURE_VALUE, repeat_list
-from validator.ingest import get_all_filepairs
+from synthetic_benchmarking.helpers.classes import IngestionHeuristics, GeneratedProblemStatement, \
+    ProblemGeneratorParameters, FullyScoredProblem, ValidatorModelStats, IssueSolution, UnsolvedIssue
+from synthetic_benchmarking.helpers.classes import MinerOutputScore
+from synthetic_benchmarking.helpers.clients import logger
+from synthetic_benchmarking.helpers.helpers import parse_yaml, highest_cosine_filepair_selector, \
+    flatten_and_display_solutions, SENTINEL_STRING_FAILURE_VALUE, SENTINEL_INT_FAILURE_VALUE, \
+    SENTINEL_FLOAT_FAILURE_VALUE, repeat_list
+from synthetic_benchmarking.miner.generate_solution import generate_code_patch
+from synthetic_benchmarking.validator.generate_problem import generate_problem_statements
+from synthetic_benchmarking.validator.grade_output import grade_miner_solution
+from synthetic_benchmarking.validator.ingest import get_all_filepairs
 
 load_dotenv()
 
