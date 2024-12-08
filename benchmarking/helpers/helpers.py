@@ -1,7 +1,6 @@
 import csv
 import itertools
 import json
-import os
 import textwrap
 from pathlib import Path
 from pprint import pformat
@@ -75,7 +74,7 @@ def save_full_data(solutions: Dict[str, List[FullyScoredProblem]], file_path: Pa
         json.dump(full_data, file, indent=4)
 
 
-def save_display_data(data: List[List[Union[float, int, str]]], file_path: str = "solutions.csv") -> None:
+def save_display_data(data: List[List[Union[float, int, str]]], file_path: Path = "solutions.csv") -> None:
     """
     Save or append the given data to a CSV file.
 
@@ -95,7 +94,7 @@ def save_display_data(data: List[List[Union[float, int, str]]], file_path: str =
     ]
 
     # Check if file exists
-    file_exists = Path(file_path).is_file()
+    file_exists = file_path.is_file()
 
     with open(file_path, mode='a', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
