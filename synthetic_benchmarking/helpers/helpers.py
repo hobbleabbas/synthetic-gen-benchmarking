@@ -4,7 +4,7 @@ import json
 import textwrap
 from pathlib import Path
 from pprint import pformat
-from typing import List, Dict, Union
+from typing import List, Dict, Union, TypedDict
 
 import yaml
 from tabulate import tabulate
@@ -53,7 +53,7 @@ def parse_yaml(config_path: Path) -> Dict:
 
 
 def save_full_data(solutions: Dict[str, List[FullyScoredProblem]], file_path: Path = Path("full_eval_data.json")) -> None:
-    full_data: List[Dict[str, List[FullyScoredProblem | Dict]]] = []
+    full_data: List[Dict[str, List[TypedDict]]] = []
 
     if file_path.exists() and file_path.is_file():
         with open(file_path, 'r') as file:
@@ -103,10 +103,10 @@ def save_display_data(data: List[List[Union[float, int, str]]], file_path: Path 
         # Write the data rows
         writer.writerows(data)
 
+flatten = lambda x: list(itertools.chain.from_iterable(x))
+
 def repeat_list(lst: List, num_repeats: int) -> List:
-    return list(itertools.chain.from_iterable(
-        [lst[:] for _ in range(num_repeats)]
-    ))
+    return flatten([lst[:] for _ in range(num_repeats)])
 
 
 def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]], should_save_data: bool=True) -> None:

@@ -1,3 +1,4 @@
+import argparse
 import itertools
 import shutil
 import time
@@ -141,7 +142,9 @@ def clone_repo(author_name: str, repo_name: str, base_path: Path) -> Path:
         raise
 
 
-def main(config: Dict) -> None:
+def main(config_file: Path) -> None:
+    config = parse_yaml(config_file)
+
     ingestion_heuristics = IngestionHeuristics(
         min_files_to_consider_dir_for_problems=3,
         min_file_content_len=50,
@@ -198,6 +201,7 @@ def main(config: Dict) -> None:
                 logger.exception(f"Scoring solution failed")
 
             solutions[repo].append(FullyScoredProblem(
+                repo=repo,
                 generated_problem_statement=problem,
                 miner_solution=solution,
                 miner_llm=llm,
@@ -233,9 +237,20 @@ def generate_problems_for_single_repo(
     return problem_statements_list
 
 
-if __name__ == "__main__":
+def parse_args() -> argparse.Namespace:
     current_dir = Path.cwd()
-    config_path = current_dir.parent / "config" / "default.yaml"
-    config = parse_yaml(config_path)
+    DEFAULT_YAML_CONFIG = current_dir.parent / "config" / "default.yaml"
 
-    main(config)
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=DEFAULT_YAML_CONFIG,
+        help="Path to YAML config file"
+    )
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    main(args.config)

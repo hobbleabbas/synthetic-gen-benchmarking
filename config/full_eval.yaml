@@ -1,0 +1,17 @@
+# Repo path:
+mwaskom/seaborn:
+
+  # List of LLMs to compare against each other
+  agent_llm: ["claude-3-5-haiku", "claude-3-5-sonnet", "gpt4omini", "gpt4o"]
+
+  # Can be either list of problems or an int.
+  #   > problems: 5 means "generate 5 problem texts to eval on"
+  #   > problems: [...] means "run eval on these specific problem texts"
+  problems: 5
+
+  # Single LLM used to generate problem statements. Not applicable if `problems` is a list of existing problem statements
+  validator_llm: "gpt4o"
+
+  # Used if you want to analyze model variance by running on the same problem statement multiple times
+  #   > repeat: 5 will run the eval config 5 times on this repo
+#  repeat: 1
