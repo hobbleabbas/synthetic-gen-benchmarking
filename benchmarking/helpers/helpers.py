@@ -1,8 +1,7 @@
-from .classes import FilePair, MinerOutputScore
-import statistics
+from .classes import FilePair, FullyScoredProblem
 from pathlib import Path
 import yaml
-from typing import List
+from typing import List, Dict
 from .constants import PRICING_DATA_PER_MILLION_TOKENS
 from tabulate import tabulate
 import textwrap
@@ -65,7 +64,7 @@ def save_to_csv(data, file_path="solutions.csv"):
         # Write the data rows
         writer.writerows(data)
 
-def flatten_and_display_solutions(solutions):
+def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]]):
     # Helper to wrap text for better display
     def wrap_text(text, width=50):
         return "\n".join(textwrap.wrap(text, width=width))
@@ -80,11 +79,18 @@ def flatten_and_display_solutions(solutions):
             miner_cost_per_min = miner_cost / duration_s * 60.
 
             flat_data.append([
+                # Repo
                 wrap_text(repo, width=30),
+                # Problem
                 wrap_text(problem.generated_problem_statement.problem_statement[:100] + "...", width=50),
+                # Model
                 problem.miner_llm,
+                # Solution Patch
                 wrap_text(problem.miner_solution.patch[:100] + "...", width=50),
+                # Output Score
                 wrap_text(str(problem.miner_solution_score.total_score), width=50),
+                # Synthetic Test Passed
+                problem.miner_solution_score.test_results.synthetic_test_passed,
                 f"{miner_cost:.2f}",
                 f"{validator_cost:.2f}",
                 f"{duration_s:.2f}",
@@ -98,6 +104,7 @@ def flatten_and_display_solutions(solutions):
         "Model",
         "Solution Patch",
         "Output Score",
+        "Synthetic Test Passed"
         "Miner $",
         "Validator $",
         "Duration (s)",

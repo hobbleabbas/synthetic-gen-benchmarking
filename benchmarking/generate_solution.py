@@ -81,7 +81,7 @@ def generate_code_patch(model_name: str, unsolved_issue: UnsolvedIssue) -> Issue
         k: (v if k not in ["edited_files30", "submission", "edited_files50"] else f"{v[:100]}...")
         for k, v in info.items()
     }
-    logger.info(f"Finished running sweagent, ran for {duration_s:.2f}s. Received info: {readable_info}")
+    logger.info(f"Finished running sweagent and generated miner solution, ran for {duration_s:.2f}s. Received info: {readable_info}")
     return IssueSolution(
         patch=info["submission"],
         model_stats=MinerModelStats.model_validate(

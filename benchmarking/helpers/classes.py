@@ -112,14 +112,6 @@ class MinerSolutionScore:
     llm_evaluation: MinerLLMEvaluation
     test_results: MinerSolutionTestResults
 
-class MinerOutputScore(BaseModel):
-    addresses_problem_in_statement: float
-    logical_solution: float
-    brevity_and_cleanliness_of_code: float
-    potential_bugs_generated: float
-    dynamic_checklist_scores: list[float]
-    total_score: float = 0
-
 @dataclass
 class FullyScoredProblem:
     generated_problem_statement: GeneratedProblemStatement
