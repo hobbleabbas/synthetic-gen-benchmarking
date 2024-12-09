@@ -8,9 +8,6 @@ def apply_patch_and_run_tests(
     miner_solution: IssueSolution,
     previous_test_results: OriginalRepoTestResults
 ) -> MinerSolutionTestResults:
-    # Lint the current patch, removing comments and other non-code text
-
-
     # Spin up a container with the repo and apply the patch
     # Run tests after, and compare the results to the tests before
 
@@ -23,7 +20,9 @@ def grade_miner_solution(
     miner_solution: IssueSolution,
     previous_test_results: OriginalRepoTestResults
 ) -> MinerSolutionScore:
-    
+    # Lint patch to remove docstrings, comments, etc
+
+
     # Run LLM eval to assess the patch
     cleaned_patch_context = OPENAI_CLIENT.chat.completions.create(
         model="gpt-4",

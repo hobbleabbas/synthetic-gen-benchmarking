@@ -111,6 +111,10 @@ def create_script_arguments(model_name: str, unsolved_issue: UnsolvedIssue) -> S
         print_config=True,
     )
 
+def run_tests(model_name: str):
+    # scrip_arguments = create_script_arguments(model_name=)
+    pass
+
 def generate_code_patch(model_name: str, unsolved_issue: UnsolvedIssue) -> IssueSolution:
     script_arguments = create_script_arguments(model_name, unsolved_issue)
 
