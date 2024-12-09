@@ -10,40 +10,15 @@ from typing import List, Dict, Union, TypedDict
 import yaml
 from tabulate import tabulate
 
-from synthetic_benchmarking.helpers.classes import FilePair, MinerOutputScore, FullyScoredProblem, convert_to_obj
+from synthetic_benchmarking.helpers.classes import FilePair, FullyScoredProblem, convert_to_obj
 from synthetic_benchmarking.helpers.clients import logger
 from synthetic_benchmarking.helpers.constants import PRICING_DATA_PER_MILLION_TOKENS, SENTINEL_FLOAT_FAILURE_VALUE, \
     SENTINEL_STRING_FAILURE_VALUE
-
-
-def compute_overall_score(miner_output_score: MinerOutputScore) -> float:
-    DYNAMIC_CHECKLIST_WEIGHT = 0.2
-    ADDRESSES_PROBLEM_WEIGHT = 0.3
-    LOGICAL_SOLUTION_WEIGHT = 0.25
-    BREVITY_WEIGHT = 0.05
-    POTENTIAL_BUGS_WEIGHT = 0.2
-
-    static_score = (
-        ADDRESSES_PROBLEM_WEIGHT * miner_output_score.addresses_problem_in_statement +
-        LOGICAL_SOLUTION_WEIGHT * miner_output_score.logical_solution +
-        BREVITY_WEIGHT * miner_output_score.brevity_and_cleanliness_of_code +
-        POTENTIAL_BUGS_WEIGHT * (1 - miner_output_score.potential_bugs_generated)
-    )
-
-    if not miner_output_score.dynamic_checklist_scores:
-        return static_score / (1. - DYNAMIC_CHECKLIST_WEIGHT)
-
-    return (
-        static_score +
-        DYNAMIC_CHECKLIST_WEIGHT * mean(miner_output_score.dynamic_checklist_scores)
-    )
-
 
 def calculate_price(model_name: str, input_tokens: int, output_tokens: int) -> float:
     pricing_dict = PRICING_DATA_PER_MILLION_TOKENS[model_name]
     input_price, output_price = pricing_dict["input"], pricing_dict["output"]
     return (input_tokens * input_price + output_tokens * output_price) / 1e6
-
 
 def highest_cosine_filepair_selector(file_pairs: List[FilePair]) -> FilePair:
     selected_file_pair = sorted(
@@ -77,12 +52,14 @@ def save_full_data(solutions: Dict[str, List[FullyScoredProblem]], file_path: Pa
 
     full_data.append(convert_to_obj(solutions))
 
+    import ipdb
+    ipdb.set_trace()
     # Write back to file
     with open(file_path, 'w') as file:
         json.dump(full_data, file, indent=4)
 
 
-def save_display_data(data: List[List[Union[float, int, str]]], file_path: Path = "solutions.csv") -> None:
+def save_display_data(data: List[List[Union[float, int, str]]], file_path: Path = Path("solutions.csv")) -> None:
     """
     Save or append the given data to a CSV file.
 
@@ -131,7 +108,7 @@ def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]]
         for problem in problems:
             overall_score = SENTINEL_FLOAT_FAILURE_VALUE
             if problem.miner_output_score is not None:
-                overall_score = compute_overall_score(problem.miner_output_score)
+                overall_score = problem.miner_output_score.total_score
 
             time_to_solve_s = problem.time_to_solve_s
 

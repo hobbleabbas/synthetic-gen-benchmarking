@@ -13,8 +13,8 @@ from git import Repo
 from jinja2 import Template
 
 from synthetic_benchmarking.helpers.classes import IngestionHeuristics, GeneratedProblemStatement, \
-    ProblemGeneratorParameters, FullyScoredProblem, ValidatorModelStats, IssueSolution, UnsolvedIssue
-from synthetic_benchmarking.helpers.classes import MinerOutputScore
+    ProblemGeneratorParameters, FullyScoredProblem, ValidatorModelStats, IssueSolution, UnsolvedIssue, \
+    MinerSolutionScore
 from synthetic_benchmarking.helpers.clients import logger
 from synthetic_benchmarking.helpers.helpers import parse_yaml, highest_cosine_filepair_selector, \
     flatten_and_display_solutions, repeat_list
@@ -92,6 +92,7 @@ def create_problem_statements(
     elif isinstance(problems, list) and all(isinstance(text, str) for text in problems):
         problem_statements: List[GeneratedProblemStatement] = [
             GeneratedProblemStatement(
+                repo_path=local_repo_dir,
                 prompt=SENTINEL_STRING_FAILURE_VALUE,
                 model=SENTINEL_STRING_FAILURE_VALUE,
                 problem_statement=text,
@@ -190,7 +191,8 @@ def main(config_file: Path) -> None:
                 time_to_solve_s = time.time() - start_time
 
 
-            miner_output_score: Optional[MinerOutputScore] = None
+            miner_output_score: Optional[MinerSolutionScore] = None
+
             try:
                 if solution is not None:
                     miner_output_score = grade_miner_solution(
@@ -232,6 +234,7 @@ def generate_problems_for_single_repo(
 
     # Generate one problem statement, with prompt and model to benchmark
     problem_statements_list = generate_problem_statements(
+        repo_path=repo_path,
         filepairs=file_pairs,
         parameters=problem_generation_params
     )
