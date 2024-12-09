@@ -194,6 +194,7 @@ def main(config_file: Path) -> None:
             try:
                 if solution is not None:
                     miner_output_score = grade_miner_solution(
+                        repo=repo,
                         generated_problem_statement=problem,
                         miner_solution=solution,
                     )

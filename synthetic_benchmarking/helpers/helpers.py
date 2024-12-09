@@ -4,6 +4,7 @@ import json
 import textwrap
 from pathlib import Path
 from pprint import pformat
+from statistics import mean
 from typing import List, Dict, Union, TypedDict
 
 import yaml
@@ -22,10 +23,20 @@ def compute_overall_score(miner_output_score: MinerOutputScore) -> float:
     BREVITY_WEIGHT = 0.05
     POTENTIAL_BUGS_WEIGHT = 0.2
 
-    return (ADDRESSES_PROBLEM_WEIGHT * miner_output_score.addresses_problem_in_statement +
-            LOGICAL_SOLUTION_WEIGHT * miner_output_score.logical_solution +
-            BREVITY_WEIGHT * miner_output_score.brevity_and_cleanliness_of_code +
-            POTENTIAL_BUGS_WEIGHT * miner_output_score.potential_bugs_generated) / (1 - DYNAMIC_CHECKLIST_WEIGHT)
+    static_score = (
+        ADDRESSES_PROBLEM_WEIGHT * miner_output_score.addresses_problem_in_statement +
+        LOGICAL_SOLUTION_WEIGHT * miner_output_score.logical_solution +
+        BREVITY_WEIGHT * miner_output_score.brevity_and_cleanliness_of_code +
+        POTENTIAL_BUGS_WEIGHT * (1 - miner_output_score.potential_bugs_generated)
+    )
+
+    if not miner_output_score.dynamic_checklist_scores:
+        return static_score / (1. - DYNAMIC_CHECKLIST_WEIGHT)
+
+    return (
+        static_score +
+        DYNAMIC_CHECKLIST_WEIGHT * mean(miner_output_score.dynamic_checklist_scores)
+    )
 
 
 def calculate_price(model_name: str, input_tokens: int, output_tokens: int) -> float:

@@ -158,6 +158,14 @@ class MinerOutputScore(BaseModel):
     potential_bugs_generated: float
     explanation_of_scores: str
 
+EMPTY_PATCH_SCORE = MinerOutputScore(
+    dynamic_checklist_scores=[],
+    addresses_problem_in_statement=0,
+    logical_solution=0,
+    brevity_and_cleanliness_of_code=0,
+    potential_bugs_generated=0,
+    explanation_of_scores="Patch was empty"
+)
 
 @dataclass
 class FullyScoredProblem:
