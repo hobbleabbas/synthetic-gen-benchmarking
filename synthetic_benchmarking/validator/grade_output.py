@@ -106,8 +106,6 @@ def run_tests_for_miner_solution(
     env = SWEEnv(script_arguments.environment)
     _, _ = env.reset(0)
 
-    import ipdb
-    ipdb.set_trace()
     tests_before = run_tests(env)
     apply_patch(env, patch)
 
@@ -145,14 +143,10 @@ def compare_test_results(before: Dict[str, str], after: Dict[str, str]) -> Miner
         elif status == "failed":
             fail_after.add(test)
 
-    # Subtract the synthetic test result from the difference in pass before/after
-    num_pass_after = len(pass_after) if synthetic_test_result == "failed" else len(pass_after) - 1 
-    num_fail_after = len(fail_after) - 1 if synthetic_test_result == "failed" else len(fail_after)
-
     return MinerSolutionTestResults(
         pass_previously=len(pass_before),
-        pass_after=num_pass_after,
-        fail_after=num_fail_after,
+        pass_after=len(pass_after),
+        fail_after=len(fail_after),
         fail_previously=len(fail_before),
         synthetic_test_passed=False if synthetic_test_result == "failed" else True
     )

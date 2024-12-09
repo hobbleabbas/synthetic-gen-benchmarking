@@ -52,8 +52,6 @@ def save_full_data(solutions: Dict[str, List[FullyScoredProblem]], file_path: Pa
 
     full_data.append(convert_to_obj(solutions))
 
-    import ipdb
-    ipdb.set_trace()
     # Write back to file
     with open(file_path, 'w') as file:
         json.dump(full_data, file, indent=4)
