@@ -73,6 +73,7 @@ def create_problem_statements(config, repo, repo_path, problems, ingestion_heuri
     elif isinstance(problems, list) and all(isinstance(text, str) for text in problems):
         problem_statements: List[GeneratedProblemStatement] = [
             GeneratedProblemStatement(
+                repo_path=Path(""),
                 prompt="N/A",
                 model="N/A",
                 problem_statement=text,
@@ -175,7 +176,7 @@ def main():
                     generated_problem_statement=problem,
                     miner_solution=solution,
                     miner_llm=llm,
-                    miner_output_score=score_for_solution
+                    miner_solution_score=score_for_solution
                 ))
             except Exception as e:
                 print(f"Encountered error, skipping SWE-agent run. Error: {repr(e)} Problem: {problem}, llm: {llm}")
@@ -200,6 +201,7 @@ def generate_problems_for_single_repo(
 
     # Generate one problem statement, with prompt and model to benchmark
     problem_statements_list = generate_problem_statements(
+        repo_path=repo_path,
         filepairs=file_pairs,
         parameters=problem_generation_params
     )

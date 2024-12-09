@@ -1,12 +1,13 @@
 from typing import List
+from pathlib import Path
 
 from helpers.helpers import calculate_price
 from helpers.classes import FilePair, ProblemGeneratorParameters, GeneratedProblemStatement, ListOfGeneratedProblems, \
     ValidatorModelStats, GeneratedProblem
 from helpers.clients import OPENAI_CLIENT
 
-
 def generate_problem_statements(
+    repo_path: Path,
     filepairs: List[FilePair],
     parameters: ProblemGeneratorParameters
 ) -> List[GeneratedProblemStatement]:
@@ -40,6 +41,7 @@ def generate_problem_statements(
 
     return [
         GeneratedProblemStatement(
+            repo_path=repo_path,
             prompt=prompt_text,
             model=model,
             problem_statement=statement.problem_statement,

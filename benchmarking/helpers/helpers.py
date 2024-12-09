@@ -8,19 +8,6 @@ from tabulate import tabulate
 import textwrap
 import csv
 
-def compute_overall_score(miner_output_score: MinerOutputScore) -> float:
-    DYNAMIC_CHECKLIST_WEIGHT = 0.2
-    ADDRESSES_PROBLEM_WEIGHT = 0.3
-    LOGICAL_SOLUTION_WEIGHT = 0.25
-    BREVITY_WEIGHT = 0.05
-    POTENTIAL_BUGS_WEIGHT = 0.2
-    
-    return DYNAMIC_CHECKLIST_WEIGHT * statistics.mean(vars(miner_output_score.dynamic_checklist_scores).values()) + \
-        ADDRESSES_PROBLEM_WEIGHT * miner_output_score.addresses_problem_in_statement + \
-        LOGICAL_SOLUTION_WEIGHT * miner_output_score.logical_solution + \
-        BREVITY_WEIGHT * miner_output_score.brevity_and_cleanliness_of_code + \
-        POTENTIAL_BUGS_WEIGHT * miner_output_score.potential_bugs_generated
-
 def calculate_price(model_name: str, input_tokens: int, output_tokens: int) -> float:
     pricing_dict = PRICING_DATA_PER_MILLION_TOKENS[model_name]
     input_price, output_price = pricing_dict["input"], pricing_dict["output"]
@@ -87,8 +74,6 @@ def flatten_and_display_solutions(solutions):
     flat_data = []
     for repo, problems in solutions.items():
         for problem in problems:
-            overall_score = compute_overall_score(problem.miner_output_score)
-
             validator_cost = problem.generated_problem_statement.model_stats.cost
             miner_cost = problem.miner_solution.model_stats.total_cost
             duration_s = problem.miner_solution.model_stats.duration_s
@@ -99,7 +84,7 @@ def flatten_and_display_solutions(solutions):
                 wrap_text(problem.generated_problem_statement.problem_statement[:100] + "...", width=50),
                 problem.miner_llm,
                 wrap_text(problem.miner_solution.patch[:100] + "...", width=50),
-                wrap_text(str(overall_score), width=50),
+                wrap_text(str(problem.miner_solution_score.total_score), width=50),
                 f"{miner_cost:.2f}",
                 f"{validator_cost:.2f}",
                 f"{duration_s:.2f}",
