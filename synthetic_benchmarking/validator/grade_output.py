@@ -1,24 +1,24 @@
+import json
 import re
 import subprocess
 import tempfile
 from pathlib import Path
 from textwrap import dedent
+from typing import Dict
 from typing import Final
 
-from git import Repo
-from typing import Dict
-import json
 import pytest
+from git import Repo
 
+from sweagent.agent.agents import AgentArguments
+from sweagent.agent.models import ModelArguments
+from sweagent.environment.swe_env import EnvironmentArguments
+from sweagent.environment.swe_env import SWEEnv
 from synthetic_benchmarking.helpers.classes import GeneratedProblemStatement, MinerSolutionScore, \
-    ValidatorModelStats,  ScriptArguments, ActionsArguments, IssueSolution, MinerSolutionTestResults, \
+    ValidatorModelStats, IssueSolution, MinerSolutionTestResults, \
     MinerLLMEvaluation, EMPTY_PATCH_SCORE
 from synthetic_benchmarking.helpers.clients import OPENAI_CLIENT, logger
-
-from sweagent.environment.swe_env import EnvironmentArguments, SWEEnv
-from sweagent.agent.agents import AgentArguments
-from sweagent.environment.swe_env import EnvironmentArguments
-from sweagent.agent.models import ModelArguments
+from synthetic_benchmarking.helpers.sweagent_classes import ActionsArguments, ScriptArguments
 
 GRADER_SYSTEM_PROMPT: Final[str] = """
 Instructions:
