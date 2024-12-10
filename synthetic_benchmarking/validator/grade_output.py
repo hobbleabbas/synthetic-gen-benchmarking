@@ -157,6 +157,8 @@ def run_tests(env: SWEEnv) -> Dict[str, str]:
     Runs tests in the given environment and returns the results.
     Returns:
         Dict[str, str]: A dictionary with test names as keys and their status (passed, failed) as values.
+    Errors:
+        Raise an exception if the tests cannot be run.
     """
     try:
         env.communicate("pip install pytest-json-report")
@@ -170,39 +172,36 @@ def run_tests(env: SWEEnv) -> Dict[str, str]:
                 tests[test["nodeid"]] = test["outcome"].lower()
 
         return tests
-    except Exception:
-        # todo: fix handling
-        logger.exception(f"Error running tests")
-        return None
+    except Exception as e:
+        logger.exception(f"Error running tests {e}")
+        raise e
 
-def apply_patch(env: SWEEnv, patch: str) -> bool:
+def apply_patch(env: SWEEnv, patch: str):
     """
     Applies the given patch to the environment.
     Args:
         env (SWEEnv): The environment to apply the patch to.
         patch (str): The patch to apply.
+
+    Errors:
+        Raise an exception if the patch cannot be applied.
     """
-    try:
-        env.communicate(f"echo '{patch}' > /root/patch.patch")
-        env.communicate_with_handling("git apply /root/patch.patch", error_msg="Error applying patch")
-        return True
-    except Exception:
-        logger.exception(f"Error applying patch")
-        return False
+    env.communicate(f"echo '{patch}' > /root/patch.patch")
+    env.communicate_with_handling("git apply /root/patch.patch", error_msg="Error applying patch")
 
 
 def verify_synthetic_test(test_contents: str) -> bool:
-    try:
-        # Collect tests without running them
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py') as tmp:
-            tmp.write(test_contents)
-            tmp.flush()
-            pytest.main(['--collect-only', str(tmp.name)])
+    """
+    Verify that the synthetic test is valid and can be run.
+    """
+    # Collect tests without running them
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.py') as tmp:
+        tmp.write(test_contents)
+        tmp.flush()
+        err = pytest.main(['--collect-only', str(tmp.name)])
+    
+    return err == 0
 
-        return True
-    except Exception:
-        logger.exception(f"Test validation failed")
-        return False
 
 
 def create_synthetic_test(
