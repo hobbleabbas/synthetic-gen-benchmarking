@@ -233,6 +233,7 @@ def create_synthetic_test(
     }
     """
 
+    logger.info(f"Making request to OpenAI to generate synthetic tests for problem statement {problem_statement_string[:50]}...")
     response = OPENAI_CLIENT.chat.completions.create(
         model="gpt-4",
         messages=[
@@ -240,11 +241,12 @@ def create_synthetic_test(
             {"role": "user", "content": context}
         ]
     )
-
     synthetic_test_contents = response.choices[0].message.content
+    logger.info(f"Finished making request to OpenAI to generate synthetic test data. Response length: {len(synthetic_test_contents)}")
+
     # Clean up the response to extract just the code between ```python and ``` markers
     if "```python" in synthetic_test_contents:
-        synthetic_test_contents = synthetic_test_contents.replace("```python`", "").replace("```", "")
+        synthetic_test_contents = synthetic_test_contents.split("```python")[1].split("```")[0].strip()
 
     logger.info(f"Generated Synthetic Test: {synthetic_test_contents}")
 

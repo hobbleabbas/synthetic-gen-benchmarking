@@ -26,14 +26,3 @@ datasets~=3.1.0
 ghapi~=1.0.6
 gymnasium~=1.0.0
 tqdm~=4.67.1
-pytz
-python-dotenv
-PyGithub
-gitpython
-tabulate
-posthog
-ipython
-ipdb
-pytest
-tiktoken
-pydantic
