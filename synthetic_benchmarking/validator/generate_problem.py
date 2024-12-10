@@ -5,8 +5,10 @@ from synthetic_benchmarking.helpers.classes import FilePair, ProblemGeneratorPar
 from synthetic_benchmarking.helpers.clients import OPENAI_CLIENT
 from synthetic_benchmarking.helpers.helpers import calculate_price
 
+from pathlib import Path
 
 def generate_problem_statements(
+    repo_path: Path,
     filepairs: List[FilePair],
     parameters: ProblemGeneratorParameters
 ) -> List[GeneratedProblemStatement]:
@@ -40,6 +42,7 @@ def generate_problem_statements(
 
     return [
         GeneratedProblemStatement(
+            repo_path=repo_path,
             prompt=prompt_text,
             model=model,
             problem_statement=statement.problem_statement,

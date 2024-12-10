@@ -1,0 +1,232 @@
+[
+    {
+        "mwaskom/seaborn": [
+            {
+                "repo": "mwaskom/seaborn",
+                "generated_problem_statement": {
+                    "repo_path": "/Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn",
+                    "prompt": "\nYou are a skilled software engineering assistant. You will be provided with multiple files as context. Each file will contain portions of code, documentation, or relevant information about a software system. Your task is to come up with a specific software engineering problem that requires a solution to involve at least two of these files. You will generate a list of these problems, in the generated_problems array response.\n\nFurther, once you have a problem statement, generate a checklist of points to consider and things that should be present in the solution (for example, are the correct Github API calls made if its a function that interfaces with the api). Generate several of these into dynamic_checklist field.\nSome additional guidelines are:\n- Do not output anything other than software engineering problem\n- The problem description should be very detailed and meticulous. It should contain sufficient context such that someone equipped with the codebase and your problem statement will have enough information to implement\n- The problem should be solvable by an autonomous SWE which can do things like installing PyPi packages, but cannot do things like make cloud provider accounts and register for other services manually.\n- The problem should not be overly difficult to implement, and should be fairly easy and not take too many LLM calls. \n- Do not disclose which files would need to be modified to solve the problem.\n\nHere are the files:\n\nFilename: /Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn/examples/smooth_bivariate_kde.py\n```python3\n\"\"\"\nSmooth kernel density with marginal histograms\n==============================================\n\n_thumb: .48, .41\n\"\"\"\nimport seaborn as sns\nsns.set_theme(style=\"white\")\n\ndf = sns.load_dataset(\"penguins\")\n\ng = sns.JointGrid(data=df, x=\"body_mass_g\", y=\"bill_depth_mm\", space=0)\ng.plot_joint(sns.kdeplot,\n             fill=True, clip=((2200, 6800), (10, 25)),\n             thresh=0, levels=100, cmap=\"rocket\")\ng.plot_marginals(sns.histplot, color=\"#03051A\", alpha=1, bins=25)\n\n```\n\nFilename: /Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn/examples/joint_kde.py\n```python3\n\"\"\"\nJoint kernel density estimate\n=============================\n\n_thumb: .6, .4\n\"\"\"\nimport seaborn as sns\nsns.set_theme(style=\"ticks\")\n\n# Load the penguins dataset\npenguins = sns.load_dataset(\"penguins\")\n\n# Show the joint distribution using kernel density estimation\ng = sns.jointplot(\n    data=penguins,\n    x=\"bill_length_mm\", y=\"bill_depth_mm\", hue=\"species\",\n    kind=\"kde\",\n)\n\n```\n\n```",
+                    "model": "gpt-4o",
+                    "problem_statement": "The given code files utilize Seaborn to create different visualizations, specifically focusing on kernel density estimates computed on the 'penguins' dataset. The objective is to enhance these visualizations by adding an interactive feature that allows users to dynamically toggle between different datasets provided by Seaborn, such as 'penguins', 'titanic', and 'iris'. This feature should affect all plots generated within each script independently. The user should be able to select the dataset from a dropdown or some GUI control element that will automatically update the plot to reflect the new data without restarting the script. This requires modifying the plotting logic to be more flexible and handle changes in dataset structure, especially considering the difference in available columns across these datasets.",
+                    "dynamic_checklist": [
+                        "Identify available Seaborn datasets and ensure compatibility across different dataset structures.",
+                        "Implement a GUI component (like a dropdown) for selecting datasets in a user-friendly manner.",
+                        "Ensure that the jointplot and JointGrid visualizations update automatically when a new dataset is selected.",
+                        "Handle potential issues with mismatched column names between datasets by implementing dynamic column selection or remapping.",
+                        "Test the interactive feature to verify seamless switching between datasets without errors.",
+                        "Consider the visual styling and ensure it remains consistent across the different datasets loaded.",
+                        "Verify that the rewritten function maintains the aesthetic and qualitative aspects of the plots, such as color schemes and plot size."
+                    ],
+                    "model_stats": {
+                        "input_tokens": 702,
+                        "output_tokens": 283,
+                        "cost": 0.004585
+                    }
+                },
+                "miner_llm": "gpt-4o",
+                "time_to_solve_s": 33.445072889328,
+                "miner_solution": null,
+                "miner_output_score": null
+            }
+        ]
+    },
+    {
+        "mwaskom/seaborn": [
+            {
+                "repo": "mwaskom/seaborn",
+                "generated_problem_statement": {
+                    "repo_path": "/Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn",
+                    "prompt": "\nYou are a skilled software engineering assistant. You will be provided with multiple files as context. Each file will contain portions of code, documentation, or relevant information about a software system. Your task is to come up with a specific software engineering problem that requires a solution to involve at least two of these files. You will generate a list of these problems, in the generated_problems array response.\n\nFurther, once you have a problem statement, generate a checklist of points to consider and things that should be present in the solution (for example, are the correct Github API calls made if its a function that interfaces with the api). Generate several of these into dynamic_checklist field.\nSome additional guidelines are:\n- Do not output anything other than software engineering problem\n- The problem description should be very detailed and meticulous. It should contain sufficient context such that someone equipped with the codebase and your problem statement will have enough information to implement\n- The problem should be solvable by an autonomous SWE which can do things like installing PyPi packages, but cannot do things like make cloud provider accounts and register for other services manually.\n- The problem should not be overly difficult to implement, and should be fairly easy and not take too many LLM calls. \n- Do not disclose which files would need to be modified to solve the problem.\n\nHere are the files:\n\nFilename: /Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn/examples/smooth_bivariate_kde.py\n```python3\n\"\"\"\nSmooth kernel density with marginal histograms\n==============================================\n\n_thumb: .48, .41\n\"\"\"\nimport seaborn as sns\nsns.set_theme(style=\"white\")\n\ndf = sns.load_dataset(\"penguins\")\n\ng = sns.JointGrid(data=df, x=\"body_mass_g\", y=\"bill_depth_mm\", space=0)\ng.plot_joint(sns.kdeplot,\n             fill=True, clip=((2200, 6800), (10, 25)),\n             thresh=0, levels=100, cmap=\"rocket\")\ng.plot_marginals(sns.histplot, color=\"#03051A\", alpha=1, bins=25)\n\n```\n\nFilename: /Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn/examples/joint_kde.py\n```python3\n\"\"\"\nJoint kernel density estimate\n=============================\n\n_thumb: .6, .4\n\"\"\"\nimport seaborn as sns\nsns.set_theme(style=\"ticks\")\n\n# Load the penguins dataset\npenguins = sns.load_dataset(\"penguins\")\n\n# Show the joint distribution using kernel density estimation\ng = sns.jointplot(\n    data=penguins,\n    x=\"bill_length_mm\", y=\"bill_depth_mm\", hue=\"species\",\n    kind=\"kde\",\n)\n\n```\n\n```",
+                    "model": "gpt-4o",
+                    "problem_statement": "In the provided Python scripts that use seaborn to demonstrate kernel density estimation, there is a redundancy in how the penguins dataset is loaded in each script. Both `smooth_bivariate_kde.py` and `joint_kde.py` scripts include the same dataset loading steps using `sns.load_dataset(\"penguins\")`. The problem is to refactor these scripts to remove redundancy by implementing a utility function in a shared module that loads datasets efficiently and reuses the loaded data across different plotting examples. \n\nThis task involves creating a new Python module (e.g., `dataset_loader.py`) that contains a function `load_penguins_dataset()`. This function should encapsulate the logic to load the dataset, potentially cache it, and handle any exceptions if the dataset is unavailable or fails to load. Then, modify both `smooth_bivariate_kde.py` and `joint_kde.py` to use this new utility function instead of directly calling `sns.load_dataset`. This refactoring should help improve the maintainability of the code by centralizing dataset loading functionality in one location.",
+                    "dynamic_checklist": [
+                        "Identify and encapsulate the dataset loading logic into a dedicated function `load_penguins_dataset()` in a new module `dataset_loader.py`.",
+                        "Ensure that `load_penguins_dataset()` is efficient, potentially using caching if it is beneficial.",
+                        "Handle exceptions in `load_penguins_dataset()` gracefully to prevent application crashes due to data loading issues.",
+                        "Modify `smooth_bivariate_kde.py` to call the newly created `load_penguins_dataset()` instead of `sns.load_dataset(\"penguins\")`.",
+                        "Modify `joint_kde.py` similarly, replacing the dataset loading line with a call to `load_penguins_dataset()`.",
+                        "Test both `smooth_bivariate_kde.py` and `joint_kde.py` to ensure that they function correctly using the new data loading utility.",
+                        "Document the changes and ensure the new module and functions are appropriately commented and documented."
+                    ],
+                    "model_stats": {
+                        "input_tokens": 702,
+                        "output_tokens": 404,
+                        "cost": 0.005795
+                    }
+                },
+                "miner_llm": "gpt4o",
+                "time_to_solve_s": 62.760565996170044,
+                "miner_solution": {
+                    "patch": "\ndiff --git a/examples/joint_kde.py b/examples/joint_kde.py\nindex 2358228b..deac409f 100644\n--- a/examples/joint_kde.py\n+++ b/examples/joint_kde.py\n@@ -5,10 +5,12 @@ Joint kernel density estimate\n _thumb: .6, .4\n \"\"\"\n import seaborn as sns\n+from seaborn.dataset_loader import load_penguins_dataset\n+\n sns.set_theme(style=\"ticks\")\n \n # Load the penguins dataset\n-penguins = sns.load_dataset(\"penguins\")\n+penguins = load_penguins_dataset()\n \n # Show the joint distribution using kernel density estimation\n g = sns.jointplot(\ndiff --git a/examples/smooth_bivariate_kde.py b/examples/smooth_bivariate_kde.py\nindex a654e399..eb524bce 100644\n--- a/examples/smooth_bivariate_kde.py\n+++ b/examples/smooth_bivariate_kde.py\n@@ -5,9 +5,11 @@ Smooth kernel density with marginal histograms\n _thumb: .48, .41\n \"\"\"\n import seaborn as sns\n+from seaborn.dataset_loader import load_penguins_dataset\n+\n sns.set_theme(style=\"white\")\n \n-df = sns.load_dataset(\"penguins\")\n+df = load_penguins_dataset()\n \n g = sns.JointGrid(data=df, x=\"body_mass_g\", y=\"bill_depth_mm\", space=0)\n g.plot_joint(sns.kdeplot,\ndiff --git a/seaborn/dataset_loader.py b/seaborn/dataset_loader.py\nnew file mode 100644\nindex 00000000..97172fdd\n--- /dev/null\n+++ b/seaborn/dataset_loader.py\n@@ -0,0 +1,9 @@\n+import seaborn as sns\n+\n+def load_penguins_dataset():\n+    \"\"\" Load and return the penguins dataset \"\"\"\n+    try:\n+        return sns.load_dataset(\"penguins\")\n+    except Exception as e:\n+        print(f\"Error loading dataset: {e}\")\n+        return None\n",
+                    "model_stats": {
+                        "api_calls": 13,
+                        "instance_cost": 0.38978500000000005,
+                        "tokens_received": 894,
+                        "tokens_sent": 152338,
+                        "total_cost": 0.38978500000000005
+                    }
+                },
+                "miner_output_score": null
+            }
+        ]
+    },
+    {
+        "mwaskom/seaborn": [
+            {
+                "repo": "mwaskom/seaborn",
+                "generated_problem_statement": {
+                    "repo_path": "/Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn",
+                    "prompt": "\nYou are a skilled software engineering assistant. You will be provided with multiple files as context. Each file will contain portions of code, documentation, or relevant information about a software system. Your task is to come up with a specific software engineering problem that requires a solution to involve at least two of these files. You will generate a list of these problems, in the generated_problems array response.\n\nFurther, once you have a problem statement, generate a checklist of points to consider and things that should be present in the solution (for example, are the correct Github API calls made if its a function that interfaces with the api). Generate several of these into dynamic_checklist field.\nSome additional guidelines are:\n- Do not output anything other than software engineering problem\n- The problem description should be very detailed and meticulous. It should contain sufficient context such that someone equipped with the codebase and your problem statement will have enough information to implement\n- The problem should be solvable by an autonomous SWE which can do things like installing PyPi packages, but cannot do things like make cloud provider accounts and register for other services manually.\n- The problem should not be overly difficult to implement, and should be fairly easy and not take too many LLM calls. \n- Do not disclose which files would need to be modified to solve the problem.\n\nHere are the files:\n\nFilename: /Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn/examples/smooth_bivariate_kde.py\n```python3\n\"\"\"\nSmooth kernel density with marginal histograms\n==============================================\n\n_thumb: .48, .41\n\"\"\"\nimport seaborn as sns\nsns.set_theme(style=\"white\")\n\ndf = sns.load_dataset(\"penguins\")\n\ng = sns.JointGrid(data=df, x=\"body_mass_g\", y=\"bill_depth_mm\", space=0)\ng.plot_joint(sns.kdeplot,\n             fill=True, clip=((2200, 6800), (10, 25)),\n             thresh=0, levels=100, cmap=\"rocket\")\ng.plot_marginals(sns.histplot, color=\"#03051A\", alpha=1, bins=25)\n\n```\n\nFilename: /Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn/examples/joint_kde.py\n```python3\n\"\"\"\nJoint kernel density estimate\n=============================\n\n_thumb: .6, .4\n\"\"\"\nimport seaborn as sns\nsns.set_theme(style=\"ticks\")\n\n# Load the penguins dataset\npenguins = sns.load_dataset(\"penguins\")\n\n# Show the joint distribution using kernel density estimation\ng = sns.jointplot(\n    data=penguins,\n    x=\"bill_length_mm\", y=\"bill_depth_mm\", hue=\"species\",\n    kind=\"kde\",\n)\n\n```\n\n```",
+                    "model": "gpt-4o",
+                    "problem_statement": "**Title:** Harmonize the Aesthetic Styles of Joint KDE Plots Across Multiple Example Scripts in Seaborn\\n\\n**Context:**\\nWithin the codebase, there are two example scripts named `smooth_bivariate_kde.py` and `joint_kde.py`, both of which use Seaborn to visualize data with joint kernel density estimation plots. However, they employ different themes and stylistic elements, leading to visual inconsistency. The `smooth_bivariate_kde.py` file uses the `sns.set_theme(style=\"white\")` while the `joint_kde.py` utilizes `sns.set_theme(style=\"ticks\")`. To improve user experience and consistency across the examples in the Seaborn documentation, the objective is to ensure a uniform aesthetic style across these scripts.\\n\\n**Objective:**\\nModify the example scripts so that they use the same Seaborn theme and style configurations. This involves aligning the color palettes, histograms styles, margin settings, and any other stylistic differences so that users can focus on the functionality rather than being distracted or confused by inconsistent visual presentation. The solution should apply a cohesive set of aesthetic settings across both scripts.\\n\\n**Requirements:**\\n1. Identify the current themes and styles applied in both scripts.\\n2. Choose a consistent theme and style to be used across both examples.\\n3. Ensure that plots in both scripts use similar color schemes, font settings, and margin layouts.\\n4. Verify that the thematic changes do not break any existing plotting functionality or expected output visualizations.\\n5. Document any changes clearly so that users reviewing the examples understand why and what visual changes were made.",
+                    "dynamic_checklist": [
+                        "Ensure that the same theme is applied using `sns.set_theme()` in both scripts.",
+                        "Align color palettes using Seaborn's palette options to maintain consistency.",
+                        "Standardize marginal histogram styles, including bin sizes and alpha values, between the plots.",
+                        "Validate plots visually to confirm that changes do not alter their functional aspect or introduce errors.",
+                        "Document the uniform styling choice in the script's docstring."
+                    ],
+                    "model_stats": {
+                        "input_tokens": 702,
+                        "output_tokens": 439,
+                        "cost": 0.006145
+                    }
+                },
+                "miner_llm": "gpt4o",
+                "time_to_solve_s": 59.28040814399719,
+                "miner_solution": {
+                    "patch": "\ndiff --git a/README_CHANGES.md b/README_CHANGES.md\nnew file mode 100644\nindex 00000000..5bdedaf5\n--- /dev/null\n+++ b/README_CHANGES.md\n@@ -0,0 +1,18 @@\n+## Changes to Example Scripts for Consistent Aesthetic Styles\n+\n+### Objective\n+To ensure a uniform aesthetic style across the example scripts `smooth_bivariate_kde.py` and `joint_kde.py` for the Seaborn library.\n+\n+### Changes\n+1. **smooth_bivariate_kde.py**\n+   - Retained the theme: `sns.set_theme(style=\"white\")`\n+\n+2. **joint_kde.py**\n+   - Updated the theme from `sns.set_theme(style=\"ticks\")` to `sns.set_theme(style=\"white\")`\n+\n+### Verification\n+Both scripts were executed to verify that thematic changes did not affect the existing plotting functionality or visual output.\n+\n+### Result\n+The output plots from both scripts now display consistent visual styles, focusing on functionality without distraction from inconsistent styling.\n+\ndiff --git a/examples/joint_kde.py b/examples/joint_kde.py\nindex 2358228b..dcebde69 100644\n--- a/examples/joint_kde.py\n+++ b/examples/joint_kde.py\n@@ -5,7 +5,7 @@ Joint kernel density estimate\n _thumb: .6, .4\n \"\"\"\n import seaborn as sns\n-sns.set_theme(style=\"ticks\")\n+sns.set_theme(style=\"white\")\n \n # Load the penguins dataset\n penguins = sns.load_dataset(\"penguins\")\n",
+                    "model_stats": {
+                        "api_calls": 10,
+                        "instance_cost": 0.2988325,
+                        "tokens_received": 877,
+                        "tokens_sent": 116025,
+                        "total_cost": 0.2988325
+                    }
+                },
+                "miner_output_score": {
+                    "total_score": 0.6800000000000002,
+                    "llm_evaluation": {
+                        "addresses_problem_in_statement": true,
+                        "logical_solution": true,
+                        "brevity_and_cleanliness_of_code": true,
+                        "potential_bugs_generated": false,
+                        "dynamic_checklist_scores": [
+                            true,
+                            false,
+                            false,
+                            true,
+                            false
+                        ],
+                        "explanation_of_scores": "### Explanation of Scores:\n\n**Addresses Problem In Statement:**\n- The patch successfully changes the theme in `joint_kde.py` to align with `smooth_bivariate_kde.py`, thereby directly addressing the problem statement regarding uniform aesthetics. The problem statement explicitly requires that both scripts use the same seaborn theme, which is precisely what the patch does.\n\n**Logical Solution:**\n- The solution logically applies a straightforward change from one theme to another, fulfilling the need for visual consistency and does so effectively by directly modifying the theme setting.\n\n**Brevity And Cleanliness Of Code:**\n- The code changes are minimal and focus solely on altering the theme setting. This makes the solution both clean and brief.\n\n**Potential Bugs Generated:**\n- There are no potential bugs introduced by this patch because it only modifies the styling theme, which does not interfere with the functional logic of the plots nor with data manipulation in Seaborn.\n\n### Checklist Evaluation:\n\n1. **Ensure that the same theme is applied using `sns.set_theme()` in both scripts.**\n   - The patch addresses this checklist item by applying `sns.set_theme(style=\"white\")` in both scripts, scoring 1.\n\n2. **Align color palettes using Seaborn's palette options to maintain consistency.**\n   - The patch does not address color palettes; hence, this scores 0. This could lead to inconsistencies if the color palettes between the scripts are distinct.\n\n3. **Standardize marginal histogram styles, including bin sizes and alpha values, between the plots.**\n   - The patch does not address these differences. There might be stylistic inconsistencies in marginal elements, so this scores 0.\n\n4. **Validate plots visually to confirm that changes do not alter their functional aspect or introduce errors.**\n   - The README indicates that plots were verified for functionality and visual consistency, scoring 1.\n\n5. **Document the uniform styling choice in the script's docstring.**\n   - The patch lacks documentation in each script's docstring regarding the uniform styling choice, leaving it unaddressed and leading to a score of 0."
+                    },
+                    "test_results": {
+                        "pass_previously": 2304,
+                        "pass_after": 2304,
+                        "fail_previously": 0,
+                        "fail_after": -1,
+                        "synthetic_test_passed": false
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "mwaskom/seaborn": [
+            {
+                "repo": "mwaskom/seaborn",
+                "generated_problem_statement": {
+                    "repo_path": "/Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn",
+                    "prompt": "\nYou are a skilled software engineering assistant. You will be provided with multiple files as context. Each file will contain portions of code, documentation, or relevant information about a software system. Your task is to come up with a specific software engineering problem that requires a solution to involve at least two of these files. You will generate a list of these problems, in the generated_problems array response.\n\nFurther, once you have a problem statement, generate a checklist of points to consider and things that should be present in the solution (for example, are the correct Github API calls made if its a function that interfaces with the api). Generate several of these into dynamic_checklist field.\nSome additional guidelines are:\n- Do not output anything other than software engineering problem\n- The problem description should be very detailed and meticulous. It should contain sufficient context such that someone equipped with the codebase and your problem statement will have enough information to implement\n- The problem should be solvable by an autonomous SWE which can do things like installing PyPi packages, but cannot do things like make cloud provider accounts and register for other services manually.\n- The problem should not be overly difficult to implement, and should be fairly easy and not take too many LLM calls. \n- Do not disclose which files would need to be modified to solve the problem.\n\nHere are the files:\n\nFilename: /Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn/examples/smooth_bivariate_kde.py\n```python3\n\"\"\"\nSmooth kernel density with marginal histograms\n==============================================\n\n_thumb: .48, .41\n\"\"\"\nimport seaborn as sns\nsns.set_theme(style=\"white\")\n\ndf = sns.load_dataset(\"penguins\")\n\ng = sns.JointGrid(data=df, x=\"body_mass_g\", y=\"bill_depth_mm\", space=0)\ng.plot_joint(sns.kdeplot,\n             fill=True, clip=((2200, 6800), (10, 25)),\n             thresh=0, levels=100, cmap=\"rocket\")\ng.plot_marginals(sns.histplot, color=\"#03051A\", alpha=1, bins=25)\n\n```\n\nFilename: /Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn/examples/joint_kde.py\n```python3\n\"\"\"\nJoint kernel density estimate\n=============================\n\n_thumb: .6, .4\n\"\"\"\nimport seaborn as sns\nsns.set_theme(style=\"ticks\")\n\n# Load the penguins dataset\npenguins = sns.load_dataset(\"penguins\")\n\n# Show the joint distribution using kernel density estimation\ng = sns.jointplot(\n    data=penguins,\n    x=\"bill_length_mm\", y=\"bill_depth_mm\", hue=\"species\",\n    kind=\"kde\",\n)\n\n```\n\n```",
+                    "model": "gpt-4o",
+                    "problem_statement": "### Problem Statement\n\nThere is a need to create a new visualization that combines elements from the `smooth_bivariate_kde.py` and the `joint_kde.py` examples. Specifically, the visualization should:\n\n1. Use the penguins dataset provided by Seaborn.\n2. Display a joint kernel density plot similar to the one in `joint_kde.py`, where the primary joint plot uses `bill_length_mm` and `bill_depth_mm` as its axes, and differentiates using the `species` variable with distinct colors.\n3. Additionally, incorporate marginal histograms akin to those in `smooth_bivariate_kde.py` for the `bill_length_mm` and `bill_depth_mm` variables.\n4. Set the theme to be consistent across the joint plot and the marginal histograms, ensuring a cohesive style and appearance.\n5. Allow parameterization for the KDE and histogram configurations such as the number of levels in the KDE plot, and the number of bins in the histogram.\n\nThis visualization should be generated through a single function that accepts the dataset and relevant plotting parameters as arguments. The resulting figure should provide insights into both the joint and marginal distributions in a visually appealing and informative manner, blending the functionalities demonstrated in the two example scripts.",
+                    "dynamic_checklist": [
+                        "Ensure that the Seaborn library is properly imported and configured for use.",
+                        "Verify that the penguins dataset is loaded correctly using `sns.load_dataset('penguins')`.",
+                        "Implement a joint plot using `sns.jointplot` with `kind='kde'` similar to `joint_kde.py` example, for `bill_length_mm` and `bill_depth_mm` with `hue='species'.",
+                        "Configure the marginal plots to use histograms with parameters inspired by `smooth_bivariate_kde.py` \u2014 such as color, alpha, and bin count.",
+                        "Create a wrapper function that accepts plotting parameters like KDE `levels` and histogram `bins` to ensure customization flexibility.",
+                        "Ensure the styles from `sns.set_theme` are uniform across both joint and marginal plots for aesthetic consistency.",
+                        "Document the function to highlight its usage, parameter inputs, and expected outputs clearly.",
+                        "Validate the resulting visualization for accuracy and completeness based on the combined requirements of both examples."
+                    ],
+                    "model_stats": {
+                        "input_tokens": 702,
+                        "output_tokens": 468,
+                        "cost": 0.006435
+                    }
+                },
+                "miner_llm": "gpt4o",
+                "time_to_solve_s": 57.84200096130371,
+                "miner_solution": {
+                    "patch": "\ndiff --git a/combined_visualization.py b/combined_visualization.py\nnew file mode 100644\nindex 00000000..79d2a871\n--- /dev/null\n+++ b/combined_visualization.py\n@@ -0,0 +1,19 @@\n+import seaborn as sns\n+\n+def combined_visualization(levels=10, bins=30):\n+    # Set the theme\n+    sns.set_theme(style=\"ticks\")\n+    \n+    # Load the penguins dataset\n+    df = sns.load_dataset(\"penguins\")\n+    \n+    # Create JointGrid with kernel density estimation and marginal histograms\n+    g = sns.JointGrid(data=df, x=\"bill_length_mm\", y=\"bill_depth_mm\", hue=\"species\", space=0)\n+    g.plot_joint(sns.kdeplot, fill=True, thresh=0, levels=levels, cmap=\"rocket\")\n+    g.plot_marginals(sns.histplot, bins=bins, alpha=0.6, element=\"step\", stat=\"density\")\n+    \n+    return g\n+\n+# Execute the function\n+if __name__ == \"__main__\":\n+    combined_visualization(levels=20, bins=25)\n",
+                    "model_stats": {
+                        "api_calls": 8,
+                        "instance_cost": 0.23624500000000004,
+                        "tokens_received": 750,
+                        "tokens_sent": 91498,
+                        "total_cost": 0.23624500000000004
+                    }
+                },
+                "miner_output_score": {
+                    "total_score": 0.7000000000000001,
+                    "llm_evaluation": {
+                        "addresses_problem_in_statement": true,
+                        "logical_solution": true,
+                        "brevity_and_cleanliness_of_code": false,
+                        "potential_bugs_generated": false,
+                        "dynamic_checklist_scores": [
+                            true,
+                            true,
+                            false,
+                            true,
+                            true,
+                            true,
+                            false,
+                            true
+                        ],
+                        "explanation_of_scores": "### Explanation of Scores:\n\n1. **Addresses Problem In Statement**: \n   - The patch successfully implements a visualization that combines elements of KDE plots and histograms using the penguins dataset, as outlined in the problem statement.\n   - **Score**: True\n\n2. **Logical Solution**: \n   - The use of `JointGrid` to structure both the joint KDE plot and the marginal histograms is appropriate and logically sound for the requirements mentioned.\n   - **Score**: True\n\n3. **Brevity And Cleanliness Of Code**:\n   - The function `combined_visualization` provides a concise solution, eliminating redundancy. However, the patch lacks comprehensive inline comments and documentation for clarity on parameter usage and effect.\n   - Additionally, it does not use `sns.jointplot` with `kind='kde'` but rather manually assigns plots to a `JointGrid` which departs from the specified method in the checklist, potentially impacting brevity and clean code adherence.\n   - **Score**: False\n\n4. **Potential Bugs Generated**:\n   - There is limited risk of bugs as the function utilizes the established Seaborn library in the intended way; parameters are reasonably set for visual clarity, reducing potential bugs.\n   - **Score**: False\n\n### Dynamic Checklist Scores:\n1. **Ensure that the Seaborn library is properly imported and configured for use**: \n   - Seaborn is imported and `set_theme` is applied. \n   - **Score**: True\n\n2. **Verify that the penguins dataset is loaded correctly using `sns.load_dataset('penguins')`**: \n   - The dataset is loaded as required. \n   - **Score**: True\n\n3. **Implement a joint plot using `sns.jointplot` with `kind='kde'` similar to `joint_kde.py` example, for `bill_length_mm` and `bill_depth_mm` with `hue='species'**: \n   - The method `sns.jointplot` with `kind='kde'` is not used; instead, `JointGrid` is used, which slightly deviates from strict adherence to the checklist instruction. \n   - **Score**: False\n\n4. **Configure the marginal plots to use histograms with parameters inspired by `smooth_bivariate_kde.py` \u2014 such as color, alpha, and bin count**: \n   - The histogram's parameters like `bins` and `alpha` are configured appropriately. \n   - **Score**: True\n\n5. **Create a wrapper function that accepts plotting parameters like KDE `levels` and histogram `bins` to ensure customization flexibility**: \n   - The function `combined_visualization` effectively accepts parameters for `levels` and `bins`. \n   - **Score**: True\n\n6. **Ensure the styles from `sns.set_theme` are uniform across both joint and marginal plots for aesthetic consistency**: \n   - The theme style is set using `sns.set_theme`, ensuring consistent plot design.\n   - **Score**: True\n\n7. **Document the function to highlight its usage, parameter inputs, and expected outputs clearly**: \n   - The function is not documented which fails to clarify usage and expected outputs. \n   - **Score**: False\n\n8. **Validate the resulting visualization for accuracy and completeness based on the combined requirements of both examples**: \n   - The visualization combines both core requirements and appears visually complete, fulfilling the aim of showcasing both joint and marginal distributions. \n   - **Score**: True"
+                    },
+                    "test_results": {
+                        "pass_previously": 2304,
+                        "pass_after": 2304,
+                        "fail_previously": 0,
+                        "fail_after": -1,
+                        "synthetic_test_passed": false
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "mwaskom/seaborn": [
+            {
+                "repo": "mwaskom/seaborn",
+                "generated_problem_statement": {
+                    "repo_path": "/Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn",
+                    "prompt": "\nYou are a skilled software engineering assistant. You will be provided with multiple files as context. Each file will contain portions of code, documentation, or relevant information about a software system. Your task is to come up with a specific software engineering problem that requires a solution to involve at least two of these files. You will generate a list of these problems, in the generated_problems array response.\n\nFurther, once you have a problem statement, generate a checklist of points to consider and things that should be present in the solution (for example, are the correct Github API calls made if its a function that interfaces with the api). Generate several of these into dynamic_checklist field.\nSome additional guidelines are:\n- Do not output anything other than software engineering problem\n- The problem description should be very detailed and meticulous. It should contain sufficient context such that someone equipped with the codebase and your problem statement will have enough information to implement\n- The problem should be solvable by an autonomous SWE which can do things like installing PyPi packages, but cannot do things like make cloud provider accounts and register for other services manually.\n- The problem should not be overly difficult to implement, and should be fairly easy and not take too many LLM calls. \n- Do not disclose which files would need to be modified to solve the problem.\n\nHere are the files:\n\nFilename: /Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn/examples/smooth_bivariate_kde.py\n```python3\n\"\"\"\nSmooth kernel density with marginal histograms\n==============================================\n\n_thumb: .48, .41\n\"\"\"\nimport seaborn as sns\nsns.set_theme(style=\"white\")\n\ndf = sns.load_dataset(\"penguins\")\n\ng = sns.JointGrid(data=df, x=\"body_mass_g\", y=\"bill_depth_mm\", space=0)\ng.plot_joint(sns.kdeplot,\n             fill=True, clip=((2200, 6800), (10, 25)),\n             thresh=0, levels=100, cmap=\"rocket\")\ng.plot_marginals(sns.histplot, color=\"#03051A\", alpha=1, bins=25)\n\n```\n\nFilename: /Users/shakeel/Desktop/subnet/benchmark-new/repos/seaborn/examples/joint_kde.py\n```python3\n\"\"\"\nJoint kernel density estimate\n=============================\n\n_thumb: .6, .4\n\"\"\"\nimport seaborn as sns\nsns.set_theme(style=\"ticks\")\n\n# Load the penguins dataset\npenguins = sns.load_dataset(\"penguins\")\n\n# Show the joint distribution using kernel density estimation\ng = sns.jointplot(\n    data=penguins,\n    x=\"bill_length_mm\", y=\"bill_depth_mm\", hue=\"species\",\n    kind=\"kde\",\n)\n\n```\n\n```",
+                    "model": "gpt-4o",
+                    "problem_statement": "Enhance the visualization capabilities by adding an interactivity layer to the seaborn plots in the `smooth_bivariate_kde.py` and `joint_kde.py` examples such that users can dynamically filter and highlight specific data points based on species in the penguins dataset. This interactive feature should enable users to select a species from a dropdown or similar widget, and the plots should automatically update to only show the data points corresponding to the selected species. Additionally, provide an option to display a summary box with average metrics (e.g., average bill length and bill depth) of the selected species. Use a Python library such as Plotly or Bokeh that integrates seamlessly with seaborn for rendering interactive visualizations, ensuring the rest of the plot aesthetics remain consistent.",
+                    "dynamic_checklist": [
+                        "Ensure integration with an interactivity library such as Plotly or Bokeh without disrupting the existing seaborn plot aesthetics.",
+                        "Implement a widget (like a dropdown) for species selection, making sure it dynamically interacts with the plot.",
+                        "Update plots to only display data for the selected species, efficiently filtering the seaborn dataset.",
+                        "Add functionality to show a summary box on the plots displaying average metrics of the filtered dataset.",
+                        "Maintain the current plot themes and styles while adding the interactive layer.",
+                        "Verify that both `smooth_bivariate_kde.py` and `joint_kde.py` examples support the new interactivity feature.",
+                        "Provide user documentation or inline comments on how to use the new interactive features."
+                    ],
+                    "model_stats": {
+                        "input_tokens": 702,
+                        "output_tokens": 302,
+                        "cost": 0.004775
+                    }
+                },
+                "miner_llm": "gpt4omini",
+                "time_to_solve_s": 132.19546484947205,
+                "miner_solution": null,
+                "miner_output_score": null
+            }
+        ]
+    }
+]
