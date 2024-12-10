@@ -138,8 +138,8 @@ def clone_repo(author_name: str, repo_name: str, base_path: Path) -> Path:
         Repo.clone_from(f"https://github.com/{author_name}/{repo_name}.git", clone_to_path)
         logger.info(f"Repository cloned to {clone_to_path}")
         return clone_to_path
-    except Exception:
-        logger.exception(f"Failed to clone repository")
+    except Exception as e:
+        logger.exception(f"Failed to clone repository {author_name}/{repo_name}. Error: {e}")
         raise
 
 
@@ -185,8 +185,8 @@ def main(config_file: Path) -> None:
                         local_code_path=local_repo_dir
                     )
                 )
-            except Exception:
-                logger.exception(f"Encountered error, skipping SWE-agent run. Problem: {pformat(problem)}, llm: {llm}")
+            except Exception as e:
+                logger.exception(f"Encountered error, skipping SWE-agent run. Problem: {pformat(problem)}, llm: {llm} \n Error: {e}")
             finally:
                 time_to_solve_s = time.time() - start_time
 
@@ -200,8 +200,8 @@ def main(config_file: Path) -> None:
                         generated_problem_statement=problem,
                         miner_solution=solution,
                     )
-            except Exception:
-                logger.exception(f"Scoring solution failed")
+            except Exception as e:
+                logger.exception(f"Scoring solution failed with error: {e}")
 
             solutions[repo].append(FullyScoredProblem(
                 repo=repo,
