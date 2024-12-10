@@ -260,3 +260,8 @@ index 00000...",0.7000000000000001,0.24,0.01,57.84,0.25
 mwaskom/seaborn,"Enhance the visualization capabilities by adding
 an interactivity layer to the seaborn plots in the
 ...",gpt4omini,N/A...,-1.0,-1.00,0.00,132.20,-1.00
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",claude-3-5-haiku," diff --git a/seaborn/distributions.py
+b/seaborn/distributions.py index
+f8ec166c..74f7c3fd 100644 --...",0.7500000000000001,0.09,-1.00,156.63,0.03

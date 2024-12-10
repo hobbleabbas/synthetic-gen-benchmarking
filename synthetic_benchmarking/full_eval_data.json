@@ -228,5 +228,59 @@
                 "miner_output_score": null
             }
         ]
+    },
+    {
+        "mwaskom/seaborn": [
+            {
+                "repo": "mwaskom/seaborn",
+                "generated_problem_statement": {
+                    "repo_path": "/Users/alex/workspace/trading-projects/bittensor/taogod/synthetic-gen-benchmarking/repos/seaborn",
+                    "prompt": "N/A",
+                    "model": "N/A",
+                    "problem_statement": "Create a unified data visualization function that combines the visual elements and styles from both the smooth kernel density plot with marginal histograms, and the joint kernel density estimate with a hue factor. The function should accept a dataset, select appropriate columns for x and y axes, optionally allow a hue parameter, and use Seaborn to generate a visualization that includes: 1) a smooth bivariate KDE plot with marginal histograms, and 2) a plot that highlights joint distribution with KDE while allowing for hue differentiation. This unified function should allow users to set custom configurations for styles such as 'white' or 'ticks'. Ensure it handles cases with and without the hue parameter and efficiently switches styles based on user preference.",
+                    "dynamic_checklist": [],
+                    "model_stats": {
+                        "input_tokens": -1,
+                        "output_tokens": -1,
+                        "cost": -1.0
+                    }
+                },
+                "miner_llm": "claude-3-5-haiku",
+                "time_to_solve_s": 156.62704992294312,
+                "miner_solution": {
+                    "patch": "\ndiff --git a/seaborn/distributions.py b/seaborn/distributions.py\nindex f8ec166c..74f7c3fd 100644\n--- a/seaborn/distributions.py\n+++ b/seaborn/distributions.py\n@@ -2528,4 +2528,54 @@ def distplot(a=None, bins=None, hist=True, kde=True, rug=False, fit=None,\n         else:\n             ax.set_xlabel(axlabel)\n \n-    return ax\n+\n+def unified_distribution_plot(\n+    data=None,\n+    x=None,\n+    y=None,\n+    hue=None,\n+    style='white',\n+    height=6,\n+    marginal_kind='hist',\n+    scatter=False,\n+    joint_kws=None,\n+    marginal_kws=None,\n+):\n+    \"\"\"\n+    Create a unified distribution plot.\n+\n+    Parameters are similar to other Seaborn distribution plots.\n+    Creates a joint grid with KDE, optional marginal distributions, and hue support.\n+    \"\"\"\n+    import seaborn as sns\n+    \n+    joint_kws = joint_kws or {}\n+    marginal_kws = marginal_kws or {}\n+    \n+    with sns.plotting_context(style):\n+        g = sns.JointGrid(data=data, x=x, y=y, hue=hue, height=height)\n+        \n+        # Joint distribution with KDE\n+        if hue:\n+            g.plot_joint(sns.kdeplot, fill=True, **joint_kws)\n+        else:\n+            g.plot_joint(sns.kdeplot, fill=True, **joint_kws)\n+        \n+        # Optional scatter\n+        if scatter:\n+            g.plot_joint(sns.scatterplot, alpha=0.5, **joint_kws)\n+        \n+        # Marginal distributions\n+        if marginal_kind == 'hist':\n+            g.plot_marginals(\n+                sns.histplot, \n+                multiple='stack' if hue else None, \n+                **marginal_kws\n+            )\n+        elif marginal_kind == 'kde':\n+            g.plot_marginals(sns.kdeplot, **marginal_kws)\n+        \n+        return g\n+\n+# Append to __all__\n+__all__.append(\"unified_distribution_plot\")\n",
+                    "model_stats": {
+                        "api_calls": 6,
+                        "instance_cost": 0.090112,
+                        "tokens_received": 5429,
+                        "tokens_sent": 85495,
+                        "total_cost": 0.090112
+                    }
+                },
+                "miner_output_score": {
+                    "total_score": 0.7500000000000001,
+                    "llm_evaluation": {
+                        "addresses_problem_in_statement": true,
+                        "logical_solution": true,
+                        "brevity_and_cleanliness_of_code": true,
+                        "potential_bugs_generated": false,
+                        "dynamic_checklist_scores": [
+                            true,
+                            true,
+                            true,
+                            false
+                        ],
+                        "explanation_of_scores": "The patch successfully introduces a new function `unified_distribution_plot` that adheres to the requirements outlined in the problem statement. It correctly utilizes Seaborn to create a KDE plot with optional marginal histograms and a hue parameter, addressing both the plot styles and user-defined style preferences. \n\n- Addressing the problem in the statement (true): The patch implements the required unified data visualization function, combining bivariate KDE plots with the optional hue parameter and marginal histograms. It checks both forms of plotting.\n- Logical solution (true): The use of the `sns.JointGrid` object is appropriate as it provides a flexible approach to create joint plots with marginal plots, perfect for the problem at hand. The logic to add scatter plots and managing style contexts is proper.\n- Brevity and cleanliness of the code (true): The function is concisely written, avoids redundancy, and is clearly structured, showing clean separation of responsibilities within the function.\n- Potential bugs generated (false): The patch seems free of apparent bugs. It handles optional parameters correctly with defaults (`joint_kws`, `marginal_kws`). The use of `hue` within `JointGrid` and the handling for both presence and absence of hue is well thought out.\n\nOverall, while the approach is methodical and seems to cover all major requirements, without comprehensive testing or handling certain edge cases that may arise (e.g., incorrect data types or unexpected input data structures), I would not rate this a perfect '1'. A more thorough consideration or testing of edge cases would ensure robustness. Score: 0.9."
+                    },
+                    "test_results": {
+                        "pass_previously": 2304,
+                        "pass_after": 0,
+                        "fail_previously": 0,
+                        "fail_after": 0,
+                        "synthetic_test_passed": false
+                    }
+                }
+            }
+        ]
     }
 ]
