@@ -10,15 +10,13 @@ from typing import Final
 import pytest
 from git import Repo
 
-from sweagent.agent.agents import AgentArguments
-from sweagent.agent.models import ModelArguments
-from sweagent.environment.swe_env import EnvironmentArguments
 from sweagent.environment.swe_env import SWEEnv
+
 from synthetic_benchmarking.helpers.classes import GeneratedProblemStatement, MinerSolutionScore, \
     ValidatorModelStats, IssueSolution, MinerSolutionTestResults, \
     MinerLLMEvaluation, EMPTY_PATCH_SCORE
 from synthetic_benchmarking.helpers.clients import OPENAI_CLIENT, logger
-from synthetic_benchmarking.helpers.sweagent_classes import ActionsArguments, ScriptArguments
+from synthetic_benchmarking.helpers.sweagent import ActionsArguments, ScriptArguments, run_tests, apply_patch, create_testing_sweenv_arguments
 
 GRADER_SYSTEM_PROMPT: Final[str] = """
 Instructions:
@@ -62,38 +60,14 @@ Affected Files:
 SYNTHETIC_TEST_FILENAME: Final[str] = "test_synthetic.py"
 
 
-def create_script_arguments(model_name: str, repo_path: Path) -> ScriptArguments:
-    swe_agent_root = Path("../SWE-agent")
-    return ScriptArguments(
-        environment=EnvironmentArguments(
-            image_name="sweagent/swe-agent:latest",
-            data_path=f"text://this-doesnt-matter-for-tests",
-            repo_path=str(repo_path),
-            verbose=True,
-            install_environment=True,
-            environment_setup=str(swe_agent_root / "config/environment_setup/seaborn.yaml")
-        ),
-        skip_existing=True,
-        agent=AgentArguments(
-            model=ModelArguments(
-                model_name= model_name,
-            ),
-            config_file=Path(swe_agent_root / "config/default_from_url.yaml"),
-        ),
-        actions=ActionsArguments(
-            open_pr=False,
-            skip_if_commits_reference_issue=False,
-            apply_patch_locally=True,
-        ),
-        print_config=True,
-    )
+
 
 def run_tests_for_miner_solution(
     patch: str,
     problem_statement: GeneratedProblemStatement,
 ) -> MinerSolutionTestResults:
     # Model name does not matter as we do not run llm eval here
-    script_arguments = create_script_arguments(model_name="gpt-4o", repo_path=problem_statement.repo_path)
+    script_arguments = create_testing_sweenv_arguments(model_name="gpt-4o", repo_path=problem_statement.repo_path)
 
     env = SWEEnv(script_arguments.environment)
     _, _ = env.reset(0)
@@ -151,45 +125,6 @@ def compare_test_results(before: Dict[str, str], after: Dict[str, str]) -> Miner
         fail_previously=len(fail_before),
         synthetic_test_passed=False if synthetic_test_result == "failed" else True
     )
-
-def run_tests(env: SWEEnv) -> Dict[str, str]:
-    """
-    Runs tests in the given environment and returns the results.
-    Returns:
-        Dict[str, str]: A dictionary with test names as keys and their status (passed, failed) as values.
-    """
-    try:
-        env.communicate("pip install pytest-json-report")
-        env.communicate("pytest --json-report --json-report-file=/tmp/report.json --json-report-omit collector", timeout_duration=300)
-        pytest_report = env.communicate("cat /tmp/report.json")
-        data = json.loads(pytest_report)
-
-        tests = {}
-        for test in data["tests"]:
-            if test["outcome"] in ["passed", "failed"]:
-                tests[test["nodeid"]] = test["outcome"].lower()
-
-        return tests
-    except Exception:
-        # todo: fix handling
-        logger.exception(f"Error running tests")
-        return None
-
-def apply_patch(env: SWEEnv, patch: str) -> bool:
-    """
-    Applies the given patch to the environment.
-    Args:
-        env (SWEEnv): The environment to apply the patch to.
-        patch (str): The patch to apply.
-    """
-    try:
-        env.communicate(f"echo '{patch}' > /root/patch.patch")
-        env.communicate_with_handling("git apply /root/patch.patch", error_msg="Error applying patch")
-        return True
-    except Exception:
-        logger.exception(f"Error applying patch")
-        return False
-
 
 def verify_synthetic_test(test_contents: str) -> bool:
     try:
@@ -440,6 +375,10 @@ if __name__ == "__main__":
             prompt="",
             problem_statement="Process data with o(n) complexity. Create a loop to do this",
             dynamic_checklist=["grade this 0", "grade this 1", "grade this 0"],
+            generated_test_patch="",
+            starter_patch="",
+            tests_passed_at_generation=0,
+            tests_failed_at_generation=0,
             model_stats=ValidatorModelStats(8000, 8000, 0.2),
             model="gpt-4o"
         ),

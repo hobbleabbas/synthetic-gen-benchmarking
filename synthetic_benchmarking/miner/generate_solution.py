@@ -13,7 +13,7 @@ from sweagent.environment.swe_env import SWEEnv
 from sweagent.types import AgentInfo, TrajectoryStep
 from synthetic_benchmarking.helpers.classes import UnsolvedIssue, IssueSolution, MinerModelStats
 from synthetic_benchmarking.helpers.clients import logger
-from synthetic_benchmarking.helpers.sweagent_classes import ScriptArguments, ActionsArguments
+from synthetic_benchmarking.helpers.sweagent import ScriptArguments, ActionsArguments
 
 PER_INSTANCE_COST_LIMIT: Final[float] = 0.5  # in $
 

@@ -97,6 +97,10 @@ def create_problem_statements(
                 model=SENTINEL_STRING_FAILURE_VALUE,
                 problem_statement=text,
                 dynamic_checklist=[],
+                starter_patch=SENTINEL_STRING_FAILURE_VALUE,
+                generated_test_patch=SENTINEL_STRING_FAILURE_VALUE,
+                tests_passed_at_generation=0,
+                tests_failed_at_generation=0,
                 model_stats=ValidatorModelStats(
                     input_tokens=SENTINEL_INT_FAILURE_VALUE,
                     output_tokens=SENTINEL_INT_FAILURE_VALUE,

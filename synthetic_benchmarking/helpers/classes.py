@@ -113,6 +113,10 @@ class GeneratedProblemStatement:
     model: str
     problem_statement: str
     dynamic_checklist: List[str]
+    starter_patch: str
+    generated_test_patch: str
+    tests_passed_at_generation: int
+    tests_failed_at_generation: int
     model_stats: Optional[ValidatorModelStats] = None
 
 
@@ -204,7 +208,7 @@ class FullyScoredProblem:
     miner_output_score: Optional[MinerSolutionScore] = None
 
 # Dynamically create a TypedDict class based on the dataclass
-def create_typed_dict_from_dataclass(dataclass_type: Type) -> Type[TypedDict]:
+def create_typed_dict_from_dataclass(dataclass_type: Type) -> Type[TypedDict]: # type: ignore
     return TypedDict(
         dataclass_type.__name__ + "Dict",
         {field.name: field.type for field in fields(dataclass_type)}

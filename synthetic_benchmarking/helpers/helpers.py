@@ -39,7 +39,7 @@ def parse_yaml(config_path: Path) -> Dict:
 
 
 def save_full_data(solutions: Dict[str, List[FullyScoredProblem]], file_path: Path = Path("full_eval_data.json")) -> None:
-    full_data: List[Dict[str, List[TypedDict]]] = []
+    full_data: List[Dict[str, List[TypedDict]]] = [] # type: ignore
 
     if file_path.exists() and file_path.is_file():
         with open(file_path, 'r') as file:
