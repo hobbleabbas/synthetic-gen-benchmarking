@@ -265,3 +265,19 @@ combines the visual elements and styles from both
 ...",claude-3-5-haiku," diff --git a/seaborn/distributions.py
 b/seaborn/distributions.py index
 f8ec166c..74f7c3fd 100644 --...",0.7500000000000001,0.09,-1.00,156.63,0.03
+mwaskom/seaborn,"You are tasked with creating a single
+visualization that combines features from both the
+`smooth_biv...",claude-3-5-haiku,N/A...,-1.0,-1.00,0.00,11.60,-1.00
+mwaskom/seaborn,"Integrate a functionality in the existing scripts
+to save the generated plots (from the seaborn
+libr...",gpt-4o,N/A...,-1.0,-1.00,0.01,32.83,-1.00
+mwaskom/seaborn,"The problem involves enhancing the Seaborn
+functionalities by introducing an option to
+customize the...",gpt4o," diff --git a/examples/joint_kde.py
+b/examples/joint_kde.py index 2358228b..a80ea2ba
+100644 --- a/ex...",-1.0,0.36,0.00,74.56,0.29
+mwaskom/seaborn,"**Problem Statement:**   The current Seaborn
+plotting scripts for `smooth_bivariate_kde.py` and
+`joi...",gpt4o," diff --git a/examples/joint_kde.py
+b/examples/joint_kde.py index 2358228b..4a5e9e5b
+100644 --- a/ex...",-1.0,0.33,0.00,56.27,0.36

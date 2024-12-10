@@ -39,11 +39,24 @@ def compare_test_results(test_results: Dict[str, str]) -> list[int, int]:
 
 def verify_synthetic_test(test_contents: str) -> bool:
     try:
+        # Create a custom pytest.ini content to ignore import errors
+        pytest_ini = """
+[pytest]
+addopts = --continue-on-collection-errors
+"""
         # Collect tests without running them
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py') as tmp:
-            tmp.write(test_contents)
-            tmp.flush()
-            pytest.main(['--collect-only', str(tmp.name)])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_dir = Path(tmpdir)
+            
+            # Write the test file
+            test_file = tmp_dir / "test_synthetic.py"
+            test_file.write_text(test_contents)
+            
+            # Write pytest.ini
+            (tmp_dir / "pytest.ini").write_text(pytest_ini)
+            
+            # Run collection
+            pytest.main(['--collect-only', str(test_file)])
 
         return True
     except Exception:
@@ -58,6 +71,9 @@ def extract_python_from_llm_generation(raw_generation: str) -> str:
     start_marker = raw_generation.find("```python") + len("```python")
     end_marker = raw_generation.rfind("```")
     extracted_code = raw_generation[start_marker:end_marker].strip()
+
+    if extracted_code.startswith("python"):
+        extracted_code = extracted_code[len("python"):]
 
     return extracted_code
 
@@ -92,7 +108,7 @@ def generate_spec_and_test_for_problem_statement(
 
     generated_spec = extract_python_from_llm_generation(spec_response.choices[0].message.content)
     
-    logger.info(f"Generated Solution Spec: {generated_pytest}")
+    logger.info(f"Generated Solution Spec: {generated_spec}")
 
     # Generate a pytest with the same extraction
     generate_test_context = f"""
@@ -190,7 +206,7 @@ def generate_problem_statements(
     for statement in parsed_response:
         import ipdb 
         ipdb.set_trace()
-        
+
         starter_patch, generated_test_patch = generate_spec_and_test_for_problem_statement(
             problem_statement=statement.problem_statement,
             filepairs_selected=selected_file_pair,
