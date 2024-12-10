@@ -6,3 +6,4 @@ trajectories/
 .env
 .venv/
 synthetic_benchmarking.egg-info/
+.vscode/
