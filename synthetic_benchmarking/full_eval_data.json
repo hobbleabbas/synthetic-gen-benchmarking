@@ -721,5 +721,48 @@
                 "miner_output_score": null
             }
         ]
+    },
+    {
+        "mwaskom/seaborn": [
+            {
+                "repo": "mwaskom/seaborn",
+                "generated_problem_statement": {
+                    "prompt": "N/A",
+                    "model": "N/A",
+                    "problem_statement": "Create a unified data visualization function that combines the visual elements and styles from both the smooth kernel density plot with marginal histograms, and the joint kernel density estimate with a hue factor. The function should accept a dataset, select appropriate columns for x and y axes, optionally allow a hue parameter, and use Seaborn to generate a visualization that includes: 1) a smooth bivariate KDE plot with marginal histograms, and 2) a plot that highlights joint distribution with KDE while allowing for hue differentiation. This unified function should allow users to set custom configurations for styles such as 'white' or 'ticks'. Ensure it handles cases with and without the hue parameter and efficiently switches styles based on user preference.",
+                    "dynamic_checklist": [],
+                    "model_stats": {
+                        "input_tokens": -1,
+                        "output_tokens": -1,
+                        "cost": -1.0
+                    }
+                },
+                "miner_llm": "gpt4omini",
+                "time_to_solve_s": 131.00057911872864,
+                "miner_solution": {
+                    "patch": "\ndiff --git a/test_unified_visualization.py b/test_unified_visualization.py\nnew file mode 100644\nindex 00000000..ee9f733e\n--- /dev/null\n+++ b/test_unified_visualization.py\n@@ -0,0 +1,14 @@\n+import pandas as pd\n+import numpy as np\n+from unified_visualization import unified_visualization\n+\n+# Generate sample data\n+np.random.seed(0)\n+data = pd.DataFrame({\n+    'x': np.random.normal(size=100),\n+    'y': np.random.normal(size=100),\n+    'hue': np.random.choice(['A', 'B'], size=100)\n+})\n+\n+# Call the unified visualization function\n+unified_visualization(data, x='x', y='y', hue='hue', style='white')\ndiff --git a/unified_visualization.py b/unified_visualization.py\nnew file mode 100644\nindex 00000000..11306c6d\n--- /dev/null\n+++ b/unified_visualization.py\n@@ -0,0 +1,19 @@\n+import seaborn as sns\n+import matplotlib.pyplot as plt\n+\n+def unified_visualization(data, x, y, hue=None, style='white'):\n+    \"\"\"Create a unified data visualization with KDE and marginal histograms.\"\"\"\n+    \n+    # Set the style for the plot\n+    sns.set_style(style)\n+    \n+    # Create a joint plot with KDE and marginals\n+    if hue:\n+        g = sns.jointplot(data=data, x=x, y=y, hue=hue, kind='kde', fill=True)\n+    else:\n+        g = sns.jointplot(data=data, x=x, y=y, kind='kde', fill=True)\n+        \n+    # Customization can be added here\n+    \n+    plt.show()\n+\n",
+                    "model_stats": {
+                        "api_calls": 16,
+                        "instance_cost": 0.03437265,
+                        "tokens_received": 1995,
+                        "tokens_sent": 221171,
+                        "total_cost": 0.03437265
+                    },
+                    "exit_status": "submitted"
+                },
+                "miner_output_score": {
+                    "dynamic_checklist_scores": [
+                        0.6,
+                        0.7,
+                        0.8
+                    ],
+                    "addresses_problem_in_statement": 0.7,
+                    "logical_solution": 0.6,
+                    "brevity_and_cleanliness_of_code": 0.8,
+                    "potential_bugs_generated": 0.6,
+                    "explanation_of_scores": "- **Addresses Problem In Statement (0.7):** The patch introduces a function `unified_visualization` that uses Seaborn to create a KDE plot with an optional hue parameter and custom styles, as requested. However, it only partially addresses the problem: it lacks the implementation of marginal histograms and the ability to differentiate joint KDE plots based on hue.\n\n- **Logical Solution (0.6):** The use of `sns.jointplot` is appropriate for KDE plots, and setting style via `sns.set_style()` aligns with user style preferences. However, the patch does not cover the aspect of adding marginal histograms and does not demonstrate how different KDEs are plotted using hue.\n\n- **Brevity And Cleanliness Of Code (0.8):** The code is brief and clean, making good use of Seaborn's capabilities with minimal code. It could have included more comments or docstring details for clarity.\n\n- **Potential Bugs Generated (0.6):** There are minor concerns; the current code assumes the existence of the hue variable without explicit error checking. There is also the risk of errors if incorrect data types for 'x' and 'y' are passed in, but this is mitigated by Seaborn's internal error handling.\n\nOverall, the patch partially implements the requested functionality but lacks key components, justifying a score of 0.7."
+                }
+            }
+        ]
     }
 ]
