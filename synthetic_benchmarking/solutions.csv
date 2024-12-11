@@ -227,3 +227,102 @@ combines the visual elements and styles from both
 ...",gpt4omini," diff --git a/seaborn/visualizations.py
 b/seaborn/visualizations.py new file mode 100644
 index 00000...",0.0,0.03,-1.00,105.19,0.02
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",gpt4omini," diff --git a/seaborn/distributions.py
+b/seaborn/distributions.py index
+f8ec166c..b109dbd1 100644 --...",0.6900000000000001,0.03,-1.00,93.74,0.02
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",gpt4omini," diff --git a/seaborn/distributions.py
+b/seaborn/distributions.py index
+f8ec166c..50944899 100644 --...",0.6475000000000001,0.50,-1.00,1366.25,0.02
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",gpt4omini,N/A...,-1.0,-1.00,-1.00,495.76,-1.00
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",gpt4omini," diff --git a/seaborn/distributions.py
+b/seaborn/distributions.py index
+f8ec166c..11c9e3cb 100644 --...",0.7370000000000001,0.50,-1.00,1315.57,0.02
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",gpt4omini," diff --git a/seaborn/distributions.py
+b/seaborn/distributions.py index
+f8ec166c..6faa3b1c 100644 --...",0.6849999999999999,0.50,-1.00,1812.20,0.02
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",gpt4o," diff --git a/test_unified_kde_hist_plot.py
+b/test_unified_kde_hist_plot.py new file mode
+100644 ind...",0.647,0.51,-1.00,108.99,0.28
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",gpt4o," diff --git a/seaborn/axisgrid.py
+b/seaborn/axisgrid.py index 17d333bc..0ab7db36
+100644 --- a/seabor...",0.25,0.51,-1.00,93.89,0.33
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",gpt4o," diff --git a/seaborn/axisgrid.py
+b/seaborn/axisgrid.py index 17d333bc..72b6ec45
+100644 --- a/seabor...",0.3365,0.50,-1.00,100.60,0.30
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",gpt4o," diff --git a/seaborn/distributions.py
+b/seaborn/distributions.py index
+f8ec166c..9e7a03ba 100644 --...",0.25,0.51,-1.00,88.83,0.34
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",gpt4o," diff --git a/seaborn/miscplot.py
+b/seaborn/miscplot.py index 3fb290c8..7691ff6f
+100644 --- a/seabor...",0.675,0.28,-1.00,72.03,0.23
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",claude-3-5-haiku," diff --git a/example_unified_plot.py
+b/example_unified_plot.py new file mode 100644
+index 00000000....",0.7687499999999999,0.20,-1.00,146.76,0.08
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",claude-3-5-haiku,N/A...,-1.0,-1.00,-1.00,78.01,-1.00
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",claude-3-5-haiku," diff --git a/seaborn/distributions.py
+b/seaborn/distributions.py index
+f8ec166c..ca5cdb88 100644 --...",0.7687499999999999,0.40,-1.00,412.58,0.06
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",claude-3-5-haiku," diff --git a/seaborn/distributions.py
+b/seaborn/distributions.py index
+f8ec166c..20b84a6a 100644 --...",0.735,0.53,-1.00,360.61,0.09
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",claude-3-5-haiku," diff --git a/distribution_plot_no_hue.png
+b/distribution_plot_no_hue.png new file mode
+100644 index...",0.25,0.20,-1.00,129.32,0.09
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",claude-3-5-sonnet," diff --git a/seaborn/distributions.py
+b/seaborn/distributions.py index
+f8ec166c..5e10447e 100644 --...",0.8150000000000001,0.52,-1.00,120.16,0.26
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",claude-3-5-sonnet," diff --git a/seaborn/distributions.py
+b/seaborn/distributions.py index
+f8ec166c..64db632d 100644 --...",0.7650000000000001,0.51,-1.00,104.17,0.29
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",claude-3-5-sonnet," diff --git a/test_unified_kde.py
+b/test_unified_kde.py new file mode 100644 index
+00000000..8b13789...",0.28125,0.51,-1.00,104.14,0.29
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",claude-3-5-sonnet," diff --git a/seaborn/unified_viz.py
+b/seaborn/unified_viz.py new file mode 100644
+index 00000000..8...",0.2,0.51,-1.00,128.95,0.24
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",claude-3-5-sonnet," diff --git a/test_unified_dist.py
+b/test_unified_dist.py new file mode 100644 index
+00000000..8b137...",0.2625,0.53,-1.00,113.35,0.28
+mwaskom/seaborn,"Create a unified data visualization function that
+combines the visual elements and styles from both
+...",claude-3-5-sonnet,N/A...,-1.0,-1.00,-1.00,118.38,-1.00

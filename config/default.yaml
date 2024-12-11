@@ -2,7 +2,29 @@
 mwaskom/seaborn:
 
   # List of LLMs to compare against each other
-  agent_llm: ["claude-3-5-haiku"]
+  agent_llm: [
+    "gpt4omini",
+    "gpt4omini",
+    "gpt4omini",
+    "gpt4omini",
+    "gpt4omini",
+    "gpt4o",
+    "gpt4o",
+    "gpt4o",
+    "gpt4o",
+    "gpt4o",
+    "claude-3-5-haiku",
+    "claude-3-5-haiku",
+    "claude-3-5-haiku",
+    "claude-3-5-haiku",
+    "claude-3-5-haiku",
+    "claude-3-5-sonnet",
+    "claude-3-5-sonnet",
+    "claude-3-5-sonnet",
+    "claude-3-5-sonnet",
+    "claude-3-5-sonnet",
+    "claude-3-5-sonnet",
+  ]
 
   # Can be either list of problems or an int.
   #   > problems: 5 means "generate 5 problem texts to eval on"
@@ -10,8 +32,8 @@ mwaskom/seaborn:
   problems: ["Create a unified data visualization function that combines the visual elements and styles from both the smooth kernel density plot with marginal histograms, and the joint kernel density estimate with a hue factor. The function should accept a dataset, select appropriate columns for x and y axes, optionally allow a hue parameter, and use Seaborn to generate a visualization that includes: 1) a smooth bivariate KDE plot with marginal histograms, and 2) a plot that highlights joint distribution with KDE while allowing for hue differentiation. This unified function should allow users to set custom configurations for styles such as 'white' or 'ticks'. Ensure it handles cases with and without the hue parameter and efficiently switches styles based on user preference."]
 
   # Single LLM used to generate problem statements. Not applicable if `problems` is a list of existing problem statements
-  validator_llm: "gpt4omini"
+  validator_llm: "gpt4o"
 
   # Used if you want to analyze model variance by running on the same problem statement multiple times
   #   > repeat: 5 will run the eval config 5 times on this repo
-#  repeat: 1
+#  repeat: 3

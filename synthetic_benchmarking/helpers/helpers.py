@@ -82,7 +82,7 @@ def save_full_data(solutions: Dict[str, List[FullyScoredProblem]], file_path: Pa
         json.dump(full_data, file, indent=4)
 
 
-def save_display_data(data: List[List[Union[float, int, str]]], file_path: Path = "solutions.csv") -> None:
+def save_display_data(data: List[List[Union[float, int, str]]], file_path: Path = Path("solutions.csv")) -> None:
     """
     Save or append the given data to a CSV file.
 
