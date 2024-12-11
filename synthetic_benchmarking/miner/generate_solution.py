@@ -148,5 +148,6 @@ def generate_code_patch(model_name: str, unsolved_issue: UnsolvedIssue) -> Issue
         patch=info["submission"],
         model_stats=MinerModelStats.model_validate(
             info["model_stats"] | dict(duration_s=duration_s)
-        )
+        ),
+        exit_status=info["exit_status"],
     )

@@ -138,6 +138,7 @@ class MinerModelStats(BaseModel):
 class IssueSolution:
     patch: str
     model_stats: Optional[MinerModelStats] = None
+    exit_status: Optional[str] = None
 
 
 class GeneratedProblem(BaseModel):

@@ -129,6 +129,7 @@ def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]]
     flat_data = []
     for repo, problems in solutions.items():
         for problem in problems:
+            problem: FullyScoredProblem
             overall_score = SENTINEL_FLOAT_FAILURE_VALUE
             if problem.miner_output_score is not None:
                 overall_score = compute_overall_score(problem.miner_output_score)
@@ -141,10 +142,12 @@ def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]]
 
             miner_cost, miner_cost_per_min = SENTINEL_FLOAT_FAILURE_VALUE, SENTINEL_FLOAT_FAILURE_VALUE
             miner_solution_patch = SENTINEL_STRING_FAILURE_VALUE
+            miner_exit_status = SENTINEL_STRING_FAILURE_VALUE
             if problem.miner_solution is not None and problem.miner_solution.model_stats is not None:
                 miner_cost = problem.miner_solution.model_stats.total_cost
                 miner_cost_per_min = miner_cost / time_to_solve_s * 60.
                 miner_solution_patch = problem.miner_solution.patch
+                miner_exit_status = problem.miner_solution.exit_status
 
             flat_data.append([
                 wrap_text(repo, width=30),
@@ -156,6 +159,7 @@ def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]]
                 f"{validator_cost:.2f}",
                 f"{time_to_solve_s:.2f}",
                 f"{miner_cost_per_min:.2f}",
+                f"{miner_exit_status}"
             ])
 
     # Define headers
@@ -168,7 +172,8 @@ def flatten_and_display_solutions(solutions: Dict[str, List[FullyScoredProblem]]
         "Miner $",
         "Validator $",
         "Duration (s)",
-        "Miner $/min"
+        "Miner $/min",
+        "Exit Status"
     ]
 
     if should_save_data:
